@@ -1,4 +1,5 @@
 import pygame
+from pygame import Surface
 from pygame.sprite import Sprite
 
 
@@ -12,11 +13,11 @@ class BaseUnit(Sprite):
         self.rect.x += initial_x
         self.rect.y += initial_y
 
-    def move(self, diff_x: int, diff_y: int):
+    def move(self, diff_x: int, diff_y: int) -> None:
         self.rect.x += diff_x
         self.rect.y += diff_y
 
-    def draw(self, screen):
+    def draw(self, screen: Surface) -> None:
         screen.blit(self.image, self.rect)
 
 

@@ -2,6 +2,7 @@ import pygame
 
 from constants import *
 from player import Player, Goblin
+from unit_layer import UnitLayer
 
 pygame.init()
 screen = pygame.display.set_mode((WIDTH, HEIGHT))
@@ -9,7 +10,10 @@ pygame.display.set_caption("My Game")
 clock = pygame.time.Clock()
 
 player = Player()
-goblin = Goblin(200, 250)
+
+unit_layer = UnitLayer()
+unit_layer.add(player)
+unit_layer.add(Goblin(200, 250))
 
 running = True
 while running:
@@ -24,18 +28,17 @@ while running:
 
     keys = pygame.key.get_pressed()
     if keys[pygame.K_w]:
-        player.move(0, -10)
+        unit_layer.move(player, 0, -10)
     if keys[pygame.K_a]:
-        player.move(-10, 0)
+        unit_layer.move(player, -10, 0)
     if keys[pygame.K_s]:
-        player.move(0, 10)
+        unit_layer.move(player, 0, 10)
     if keys[pygame.K_d]:
-        player.move(10, 0)
+        unit_layer.move(player, 10, 0)
 
     screen.fill(BLUE)
 
-    player.draw(screen)
-    goblin.draw(screen)
+    unit_layer.draw(screen)
 
     pygame.display.flip()
 
