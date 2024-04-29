@@ -1,7 +1,5 @@
-import pygame
-
 from constants import *
-from player import Player, Goblin
+from player import Player, Goblin, Fireball
 from unit_layer import UnitLayer
 
 pygame.init()
@@ -12,8 +10,12 @@ clock = pygame.time.Clock()
 player = Player()
 
 unit_layer = UnitLayer()
+goblin = Goblin(200, 350)
+
 unit_layer.add(player)
-unit_layer.add(Goblin(200, 250))
+unit_layer.add(goblin)
+unit_layer.add(Goblin(230, 270))
+unit_layer.add_non_collide(Fireball(player, goblin, 10))
 
 running = True
 while running:

@@ -8,12 +8,18 @@ class UnitLayer:
     def __init__(self) -> None:
         super().__init__()
         self.units = Group()
+        self.non_collide = Group()
 
     def add(self, sprite: BaseUnit) -> None:
         self.units.add(sprite)
 
+    def add_non_collide(self, sprite: BaseUnit) -> None:
+        self.non_collide.add(sprite)
+
     def draw(self, screen: Surface) -> None:
         for unit in self.units:
+            unit.draw(screen)
+        for unit in self.non_collide:
             unit.draw(screen)
 
     def move(self, sprite: BaseUnit, diff_x: int, diff_y: int) -> None:
