@@ -1,6 +1,6 @@
-WIDTH = 360
+WIDTH = 640
 HEIGHT = 480
-FPS = 30
+FPS = 10
 
 WHITE = (255, 255, 255)
 BLACK = (0, 0, 0)
