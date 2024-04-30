@@ -15,7 +15,7 @@ goblin = Goblin(400, 350)
 unit_layer.add(player)
 unit_layer.add(goblin)
 unit_layer.add(Goblin(230, 270))
-unit_layer.add_non_collide(Fireball(player, goblin, 10))
+
 
 running = True
 while running:
@@ -26,17 +26,18 @@ while running:
             running = False
         if event.type == pygame.KEYDOWN:
             if event.key == pygame.K_q:
-                player.move(0, -10)
+                unit_layer.add_non_collide(Fireball(player, goblin, 1))
 
+    player_move_speed = int(120 / FPS)
     keys = pygame.key.get_pressed()
     if keys[pygame.K_w]:
-        unit_layer.move(player, 0, -10)
+        unit_layer.move(player, 0, -player_move_speed)
     if keys[pygame.K_a]:
-        unit_layer.move(player, -10, 0)
+        unit_layer.move(player, -player_move_speed, 0)
     if keys[pygame.K_s]:
-        unit_layer.move(player, 0, 10)
+        unit_layer.move(player, 0, player_move_speed)
     if keys[pygame.K_d]:
-        unit_layer.move(player, 10, 0)
+        unit_layer.move(player, player_move_speed, 0)
 
     screen.fill(BLUE)
 

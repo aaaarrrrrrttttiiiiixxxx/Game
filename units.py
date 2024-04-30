@@ -5,7 +5,7 @@ import pygame
 from pygame import Surface
 from pygame.sprite import Sprite
 
-from config import FONT, RED
+from config import FONT, RED, FPS
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)
@@ -50,7 +50,7 @@ class Player(BaseUnit):
 
 class Fireball(BaseUnit):
     image_path = "resources/units/fireball.png"
-    move_speed = 110
+    move_speed = 240 / FPS
 
     def __init__(self, unit_from: BaseUnit, unit_to: BaseUnit, damage: int) -> None:
         super().__init__(unit_from.rect.center[0], unit_from.rect.center[1])

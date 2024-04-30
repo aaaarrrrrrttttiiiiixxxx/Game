@@ -3,7 +3,7 @@ import logging.config
 
 WIDTH = 640
 HEIGHT = 480
-FPS = 10
+FPS = 30
 
 WHITE = (255, 255, 255)
 BLACK = (0, 0, 0)
