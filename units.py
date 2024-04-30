@@ -93,6 +93,11 @@ class Fireball(BaseUnit):
 
         super().draw(screen)
 
+    def move(self, diff_x: int, diff_y: int) -> None:
+        self.rect.x += diff_x
+        self.rect.y += diff_y
+        self.real_x += float(diff_x)
+        self.real_y += float(diff_y)
 
 class Goblin(BaseUnit):
     image_path = "resources/units/goblin_64.png"
