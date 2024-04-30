@@ -50,7 +50,7 @@ class Player(BaseUnit):
 
 class Fireball(BaseUnit):
     image_path = "resources/units/fireball.png"
-    move_speed = 50
+    move_speed = 110
 
     def __init__(self, unit_from: BaseUnit, unit_to: BaseUnit, damage: int) -> None:
         super().__init__(unit_from.rect.center[0], unit_from.rect.center[1])
@@ -64,16 +64,16 @@ class Fireball(BaseUnit):
     def draw(self, screen: Surface) -> None:
         direction_x = self.unit_to.rect.center[0] - self.real_x
         direction_y = self.unit_to.rect.center[1] - self.real_y
-
-        if direction_x + direction_y < 1:
+        if abs(direction_x) + abs(direction_y) < self.move_speed:
             self.image = pygame.image.load("resources/units/explosion.png")
+            self.rect.center = self.unit_to.rect.center
             super().draw(screen)
             self.kill()
             self.unit_to.got_attack(self.damage)
             return
 
         ratio = abs(direction_x / direction_y)
-        move_y = self.move_speed * math.sqrt(ratio * ratio + 1)
+        move_y = self.move_speed / math.sqrt(ratio * ratio + 1)
         move_x = move_y * ratio
         logger.debug(f'{move_x}, {move_y}')
         self.real_x += move_x if direction_x > 0 else -move_x

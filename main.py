@@ -7,10 +7,10 @@ screen = pygame.display.set_mode((WIDTH, HEIGHT))
 pygame.display.set_caption("My Game")
 clock = pygame.time.Clock()
 
-player = Player()
+player = Player(0, 0)
 
 unit_layer = UnitLayer()
-goblin = Goblin(200, 350)
+goblin = Goblin(400, 350)
 
 unit_layer.add(player)
 unit_layer.add(goblin)
