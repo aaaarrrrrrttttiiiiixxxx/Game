@@ -11,12 +11,13 @@ logger.setLevel(logging.DEBUG)
 
 
 class UnitLayer:
-    def __init__(self) -> None:
+    def __init__(self, screen: Surface) -> None:
         super().__init__()
         self.units = Group()
         self.non_collide = Group()
         self.all_sprites = Group()
         self.player = None
+        self.screen = screen
 
     def add(self, sprite: BaseUnit) -> None:
         self.units.add(sprite)
@@ -27,22 +28,22 @@ class UnitLayer:
         self.all_sprites.add(sprite)
 
     def create_player(self, initial_x: int = None, initial_y: int = None) -> Player:
-        self.player = Player(initial_x or WIDTH / 2, initial_y or HEIGHT / 2)
+        self.player = Player(self.screen, initial_x or WIDTH / 2, initial_y or HEIGHT / 2)
         self.units.add(self.player)
         self.all_sprites.add(self.player)
         return self.player
 
     def create_goblin(self, initial_x: int = 0, initial_y: int = 0) -> Goblin:
-        goblin = Goblin(initial_x, initial_y)
+        goblin = Goblin(self.screen, initial_x, initial_y)
         self.units.add(goblin)
         self.all_sprites.add(goblin)
         return goblin
 
-    def draw(self, screen: Surface) -> None:
+    def draw(self) -> None:
         for unit in self.units:
-            unit.draw(screen)
+            unit.draw()
         for unit in self.non_collide:
-            unit.draw(screen)
+            unit.draw()
 
     def move(self, sprite: BaseUnit, diff_x: int, diff_y: int) -> None:
         if diff_x != 0 and diff_y != 0:
