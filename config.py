@@ -3,6 +3,8 @@ import logging.config
 
 WIDTH = 640
 HEIGHT = 480
+# CAMERA_MOVE = 0.1
+CAMERA_MOVE = None
 FPS = 30
 
 WHITE = (255, 255, 255)

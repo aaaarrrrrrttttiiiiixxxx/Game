@@ -9,7 +9,7 @@ clock = pygame.time.Clock()
 
 unit_layer = UnitLayer()
 
-player = unit_layer.create_player(0, 350)
+player = unit_layer.create_player()
 goblin = unit_layer.create_goblin(100, 350)
 unit_layer.create_goblin(230, 270)
 
@@ -29,13 +29,13 @@ while running:
     player_move_speed = int(120 / FPS)
     keys = pygame.key.get_pressed()
     if keys[pygame.K_w]:
-        unit_layer.move(player, 0, -player_move_speed)
+        unit_layer.move_player(0, -player_move_speed)
     if keys[pygame.K_a]:
-        unit_layer.move(player, -player_move_speed, 0)
+        unit_layer.move_player(-player_move_speed, 0)
     if keys[pygame.K_s]:
-        unit_layer.move(player, 0, player_move_speed)
+        unit_layer.move_player(0, player_move_speed)
     if keys[pygame.K_d]:
-        unit_layer.move(player, player_move_speed, 0)
+        unit_layer.move_player(player_move_speed, 0)
 
     screen.fill(BLUE)
 

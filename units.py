@@ -1,3 +1,4 @@
+import contextlib
 import logging
 import math
 
@@ -20,8 +21,7 @@ class BaseUnit(Sprite):
         super(BaseUnit, self).__init__()
         self.image = pygame.image.load(self.image_path)
         self.rect = self.image.get_rect()
-        self.rect.x += initial_x
-        self.rect.y += initial_y
+        self.rect.center = (initial_x, initial_y)
         self.hp = self.max_hp
         self.hp_regen = self.base_hp_regen
 
@@ -44,6 +44,10 @@ class BaseUnit(Sprite):
         self.hp -= damage
         if self.hp <= 0:
             self.kill()
+
+    def update(self, action: str, **kwargs) -> None:
+        with contextlib.suppress(AttributeError, TypeError):
+            self.__getattribute__(action)(**kwargs)
 
 
 class Player(BaseUnit):
