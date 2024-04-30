@@ -1,21 +1,17 @@
 from config import *
-from units import Player, Goblin, Fireball
 from unit_layer import UnitLayer
+from units import Fireball
 
 pygame.init()
 screen = pygame.display.set_mode((WIDTH, HEIGHT))
 pygame.display.set_caption("My Game")
 clock = pygame.time.Clock()
 
-player = Player(0, 350)
-
 unit_layer = UnitLayer()
-goblin = Goblin(100, 350)
 
-unit_layer.add(player)
-unit_layer.add(goblin)
-unit_layer.add(Goblin(230, 270))
-
+player = unit_layer.create_player(0, 350)
+goblin = unit_layer.create_goblin(100, 350)
+unit_layer.create_goblin(230, 270)
 
 running = True
 while running:
@@ -25,11 +21,12 @@ while running:
         if event.type == pygame.QUIT:
             running = False
         if event.type == pygame.KEYDOWN:
-            if event.key in [pygame.K_1, pygame.K_2, pygame.K_3, pygame.K_4]:
-                unit_layer.add_non_collide(Fireball(player, goblin, 1))
+            if event.key in [pygame.K_1, pygame.K_2]:
+                unit_layer.add_non_collide(Fireball(player, unit_layer.get_nearest_mob(*pygame.mouse.get_pos()), 1))
+            if event.key in [pygame.K_3, pygame.K_4]:
+                unit_layer.add_non_collide(Fireball(player, unit_layer.get_nearest_mob(*player.rect.center), 1))
 
     player_move_speed = int(120 / FPS)
-    # goblin.move(1, 0)
     keys = pygame.key.get_pressed()
     if keys[pygame.K_w]:
         unit_layer.move(player, 0, -player_move_speed)

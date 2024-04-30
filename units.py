@@ -29,6 +29,9 @@ class BaseUnit(Sprite):
         self.rect.x += diff_x
         self.rect.y += diff_y
 
+    def dist_from(self, x: int, y: int) -> float:
+        return math.sqrt((self.rect.x - x) * (self.rect.x - x) + (self.rect.y - y) * (self.rect.y - y))
+
     def draw(self, screen: Surface) -> None:
         screen.blit(self.image, self.rect)
         if self.max_hp:
