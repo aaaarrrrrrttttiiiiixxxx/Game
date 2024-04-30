@@ -1,7 +1,7 @@
 from pygame import Surface
 from pygame.sprite import Group, spritecollide
 
-from player import BaseUnit
+from units import BaseUnit
 
 
 class UnitLayer:

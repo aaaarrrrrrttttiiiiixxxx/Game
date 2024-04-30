@@ -1,5 +1,5 @@
-from constants import *
-from player import Player, Goblin, Fireball
+from config import *
+from units import Player, Goblin, Fireball
 from unit_layer import UnitLayer
 
 pygame.init()
