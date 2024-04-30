@@ -7,10 +7,10 @@ screen = pygame.display.set_mode((WIDTH, HEIGHT))
 pygame.display.set_caption("My Game")
 clock = pygame.time.Clock()
 
-player = Player(0, 0)
+player = Player(0, 350)
 
 unit_layer = UnitLayer()
-goblin = Goblin(400, 350)
+goblin = Goblin(100, 350)
 
 unit_layer.add(player)
 unit_layer.add(goblin)
@@ -25,10 +25,11 @@ while running:
         if event.type == pygame.QUIT:
             running = False
         if event.type == pygame.KEYDOWN:
-            if event.key == pygame.K_q:
+            if event.key in [pygame.K_1, pygame.K_2, pygame.K_3, pygame.K_4]:
                 unit_layer.add_non_collide(Fireball(player, goblin, 1))
 
     player_move_speed = int(120 / FPS)
+    # goblin.move(1, 0)
     keys = pygame.key.get_pressed()
     if keys[pygame.K_w]:
         unit_layer.move(player, 0, -player_move_speed)

@@ -50,7 +50,7 @@ class Player(BaseUnit):
 
 class Fireball(BaseUnit):
     image_path = "resources/units/fireball.png"
-    move_speed = 240 / FPS
+    move_speed = 120 / FPS
 
     def __init__(self, unit_from: BaseUnit, unit_to: BaseUnit, damage: int) -> None:
         super().__init__(unit_from.rect.center[0], unit_from.rect.center[1])
@@ -72,9 +72,13 @@ class Fireball(BaseUnit):
             self.unit_to.got_attack(self.damage)
             return
 
-        ratio = abs(direction_x / direction_y)
-        move_y = self.move_speed / math.sqrt(ratio * ratio + 1)
-        move_x = move_y * ratio
+        if direction_y == 0:
+            move_x = self.move_speed
+            move_y = 0
+        else:
+            ratio = abs(direction_x / direction_y)
+            move_y = self.move_speed / math.sqrt(ratio * ratio + 1)
+            move_x = move_y * ratio
         logger.debug(f'{move_x}, {move_y}')
         self.real_x += move_x if direction_x > 0 else -move_x
         self.real_y += move_y if direction_y > 0 else -move_y
