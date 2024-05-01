@@ -28,13 +28,14 @@ class UnitLayer:
         self.all_sprites.add(sprite)
 
     def create_player(self, initial_x: int = None, initial_y: int = None) -> Player:
-        self.player = Player(self.screen, initial_x or WIDTH / 2, initial_y or HEIGHT / 2)
+        self.player = Player(self, self.screen, initial_x or WIDTH / 2, initial_y or HEIGHT / 2)
         self.units.add(self.player)
         self.all_sprites.add(self.player)
         return self.player
 
     def create_goblin(self, initial_x: int = 0, initial_y: int = 0) -> Goblin:
-        goblin = Goblin(self.screen, initial_x, initial_y)
+        goblin = Goblin(self, self.screen, initial_x, initial_y)
+        goblin.set_target(self.player)
         self.units.add(goblin)
         self.all_sprites.add(goblin)
         return goblin

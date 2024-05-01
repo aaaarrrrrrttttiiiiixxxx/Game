@@ -22,11 +22,11 @@ while running:
             running = False
         if event.type == pygame.KEYDOWN:
             if event.key in [pygame.K_1, pygame.K_2]:
-                fireball = Fireball(screen, player.rect.center[0], player.rect.center[1], 1)
+                fireball = Fireball(unit_layer, screen, player.rect.center[0], player.rect.center[1], 1)
                 fireball.set_target(unit_layer.get_nearest_mob(*pygame.mouse.get_pos()))
                 unit_layer.add_non_collide(fireball)
             if event.key in [pygame.K_3, pygame.K_4]:
-                fireball = Fireball(screen, player.rect.center[0], player.rect.center[1], 1)
+                fireball = Fireball(unit_layer, screen, player.rect.center[0], player.rect.center[1], 1)
                 fireball.set_target(unit_layer.get_nearest_mob(*player.rect.center))
                 unit_layer.add_non_collide(fireball)
 

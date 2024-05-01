@@ -6,7 +6,7 @@ import pygame
 from pygame import Surface
 from pygame.sprite import Sprite
 
-from config import FONT, RED, FPS
+from config import FONT, RED, FPS, GREEN
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)
@@ -17,7 +17,7 @@ class BaseUnit(Sprite):
     max_hp = None
     base_hp_regen = 0
 
-    def __init__(self, screen: Surface, initial_x: int = 0, initial_y: int = 0):
+    def __init__(self, unit_layer, screen: Surface, initial_x: int = 0, initial_y: int = 0):
         super(BaseUnit, self).__init__()
         self.image = pygame.image.load(self.image_path)
         self.rect = self.image.get_rect()
@@ -25,16 +25,23 @@ class BaseUnit(Sprite):
         self.hp = self.max_hp
         self.hp_regen = self.base_hp_regen
         self.screen = screen
+        self.unit_layer = unit_layer
 
     def move(self, diff_x: int, diff_y: int) -> None:
         self.rect.x += diff_x
         self.rect.y += diff_y
+
+    def move_to(self, res_x: int, res_y: int) -> None:
+        self.rect.x = res_x
+        self.rect.y = res_y
 
     def dist_from(self, x: int, y: int) -> float:
         return math.sqrt((self.rect.x - x) * (self.rect.x - x) + (self.rect.y - y) * (self.rect.y - y))
 
     def draw(self) -> None:
         self.screen.blit(self.image, self.rect)
+        pygame.draw.rect(self.screen, RED, self.rect, 2)
+        pygame.draw.circle(self.screen, GREEN, self.rect.center, self.radius, 2)
         if self.max_hp:
             img2 = FONT.render(f'{self.hp} / {self.max_hp}', True, RED)
             x, y = self.rect.topleft
@@ -50,21 +57,23 @@ class BaseUnit(Sprite):
         with contextlib.suppress(AttributeError, TypeError):
             self.__getattribute__(action)(**kwargs)
 
+    @property
+    def radius(self) -> int:
+        return int(math.sqrt(self.rect.w ** 2 + self.rect.h ** 2) / 2)
+
 
 class Player(BaseUnit):
     image_path = "resources/units/player.png"
-    max_hp = 100
+    max_hp = 1000000
 
 
 class MovingToTargetUnit(BaseUnit):
     move_speed = None
 
-    def __init__(self, screen: Surface, initial_x: int = 0, initial_y: int = 0):
-        super().__init__(screen, initial_x, initial_y)
+    def __init__(self, unit_layer, screen: Surface, initial_x: int = 0, initial_y: int = 0):
+        super().__init__(unit_layer, screen, initial_x, initial_y)
         self.target = None
-        self.real_x = float(initial_x)
-        self.real_y = float(initial_y)
-        self.rect.center = int(self.real_x), int(self.real_y)
+        self.rect.center = initial_x, initial_y
 
     def set_target(self, target: BaseUnit) -> None:
         self.target = target
@@ -72,11 +81,13 @@ class MovingToTargetUnit(BaseUnit):
     def on_reach_target(self) -> None:
         pass
 
-    def make_movement_step(self) -> None:
-        direction_x = self.target.rect.center[0] - self.real_x
-        direction_y = self.target.rect.center[1] - self.real_y
-        if abs(direction_x) + abs(direction_y) < self.move_speed:
-            self.rect.center = self.target.rect.center
+    def reach_target(self, distance_x: int, distance_y: int) -> bool:
+        return math.sqrt(distance_x ** 2 + distance_y ** 2) < self.move_speed
+
+    def make_movement_step(self, use_collide: bool = False) -> None:
+        direction_x = self.target.rect.center[0] - self.rect.center[0]
+        direction_y = self.target.rect.center[1] - self.rect.center[1]
+        if self.reach_target(direction_x, direction_y):
             self.on_reach_target()
             return
         if direction_y == 0:
@@ -86,26 +97,28 @@ class MovingToTargetUnit(BaseUnit):
             ratio = abs(direction_x / direction_y)
             move_y = self.move_speed / math.sqrt(ratio * ratio + 1)
             move_x = move_y * ratio
-        self.real_x += move_x if direction_x > 0 else -move_x
-        self.real_y += move_y if direction_y > 0 else -move_y
-        self.rect.center = int(self.real_x), int(self.real_y)
+        diff_x = move_x if direction_x > 0 else -move_x
+        diff_y = move_y if direction_y > 0 else -move_y
+        if use_collide:
+            self.unit_layer.move(self, 0, diff_y)
+            self.unit_layer.move(self, diff_x, 0)
+        else:
+            self.move(diff_x, diff_y)
 
     def move(self, diff_x: int, diff_y: int) -> None:
-        self.rect.x += diff_x
-        self.rect.y += diff_y
-        self.real_x += float(diff_x)
-        self.real_y += float(diff_y)
+        self.rect.center = (self.rect.center[0] + diff_x, self.rect.center[1] + diff_y)
 
 
 class Fireball(MovingToTargetUnit):
     image_path = "resources/units/fireball.png"
     move_speed = 120 / FPS
 
-    def __init__(self, screen: Surface, initial_x: int = 0, initial_y: int = 0, damage: int = 0):
-        super().__init__(screen, initial_x, initial_y)
+    def __init__(self, unit_layer, screen: Surface, initial_x: int = 0, initial_y: int = 0, damage: int = 0):
+        super().__init__(unit_layer, screen, initial_x, initial_y)
         self.damage = damage
 
     def on_reach_target(self) -> None:
+        self.rect.center = self.target.rect.center
         self.image = pygame.image.load("resources/units/explosion.png")
         super().draw()
         self.kill()
@@ -116,6 +129,21 @@ class Fireball(MovingToTargetUnit):
         super().draw()
 
 
-class Goblin(BaseUnit):
+class Goblin(MovingToTargetUnit):
     image_path = "resources/units/goblin_64.png"
     max_hp = 50
+    move_speed = 30 / FPS
+    damage = 1
+    attack_range = None
+
+    def reach_target(self, distance_x: int, distance_y: int) -> bool:
+        attack_range = self.attack_range or self.radius + self.unit_layer.player.radius  # calc melee attack range
+        return math.sqrt(distance_x ** 2 + distance_y ** 2) < attack_range
+
+    def on_reach_target(self) -> None:
+        self.target.got_attack(self.damage)
+
+    def draw(self) -> None:
+        if self.target is not None:
+            self.make_movement_step(True)
+        super().draw()
