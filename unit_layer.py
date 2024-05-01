@@ -4,7 +4,7 @@ from pygame import Surface
 from pygame.sprite import Group, spritecollide
 
 from config import CAMERA_MOVE, WIDTH, HEIGHT
-from units import BaseUnit, Player, Goblin
+from units import BaseUnit, Player, Goblin, GoblinArcher
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)
@@ -35,6 +35,13 @@ class UnitLayer:
 
     def create_goblin(self, initial_x: int = 0, initial_y: int = 0) -> Goblin:
         goblin = Goblin(self, self.screen, initial_x, initial_y)
+        goblin.set_target(self.player)
+        self.units.add(goblin)
+        self.all_sprites.add(goblin)
+        return goblin
+
+    def create_goblin_archer(self, initial_x: int = 0, initial_y: int = 0) -> Goblin:
+        goblin = GoblinArcher(self, self.screen, initial_x, initial_y)
         goblin.set_target(self.player)
         self.units.add(goblin)
         self.all_sprites.add(goblin)

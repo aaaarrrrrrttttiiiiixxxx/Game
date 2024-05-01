@@ -11,7 +11,7 @@ unit_layer = UnitLayer(screen)
 
 player = unit_layer.create_player()
 goblin = unit_layer.create_goblin(100, 350)
-unit_layer.create_goblin(230, 270)
+unit_layer.create_goblin_archer(230, 270)
 
 running = True
 while running:

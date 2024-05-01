@@ -6,6 +6,7 @@ import pygame
 from pygame import Surface
 from pygame.sprite import Sprite
 
+import unit_layer
 from config import FONT, RED, FPS, GREEN
 
 logger = logging.getLogger(__name__)
@@ -40,8 +41,8 @@ class BaseUnit(Sprite):
 
     def draw(self) -> None:
         self.screen.blit(self.image, self.rect)
-        pygame.draw.rect(self.screen, RED, self.rect, 2)
-        pygame.draw.circle(self.screen, GREEN, self.rect.center, self.radius, 2)
+        # pygame.draw.rect(self.screen, RED, self.rect, 2)
+        # pygame.draw.circle(self.screen, GREEN, self.rect.center, self.radius, 2)
         if self.max_hp:
             img2 = FONT.render(f'{self.hp} / {self.max_hp}', True, RED)
             x, y = self.rect.topleft
@@ -109,9 +110,9 @@ class MovingToTargetUnit(BaseUnit):
         self.rect.center = (self.rect.center[0] + diff_x, self.rect.center[1] + diff_y)
 
 
-class Fireball(MovingToTargetUnit):
-    image_path = "resources/units/fireball.png"
-    move_speed = 120 / FPS
+class BaseMissile(MovingToTargetUnit):
+    image_path = None
+    move_speed = None
 
     def __init__(self, unit_layer, screen: Surface, initial_x: int = 0, initial_y: int = 0, damage: int = 0):
         super().__init__(unit_layer, screen, initial_x, initial_y)
@@ -129,11 +130,21 @@ class Fireball(MovingToTargetUnit):
         super().draw()
 
 
-class Goblin(MovingToTargetUnit):
-    image_path = "resources/units/goblin_64.png"
-    max_hp = 50
-    move_speed = 30 / FPS
-    damage = 1
+class Fireball(BaseMissile):
+    image_path = "resources/units/fireball.png"
+    move_speed = 120 / FPS
+
+
+class Arrow(BaseMissile):
+    image_path = "resources/units/arrow.png"
+    move_speed = 240 / FPS
+
+
+class BaseEnemy(MovingToTargetUnit):
+    image_path = None
+    max_hp = None
+    move_speed = None
+    damage = None
     attack_range = None
 
     def reach_target(self, distance_x: int, distance_y: int) -> bool:
@@ -147,3 +158,24 @@ class Goblin(MovingToTargetUnit):
         if self.target is not None:
             self.make_movement_step(True)
         super().draw()
+
+
+class Goblin(BaseEnemy):
+    image_path = "resources/units/goblin_64.png"
+    max_hp = 50
+    move_speed = 60 / FPS
+    damage = 1
+    attack_range = None
+
+
+class GoblinArcher(BaseEnemy):
+    image_path = "resources/units/goblin_archer.png"
+    max_hp = 25
+    move_speed = 30 / FPS
+    damage = 1
+    attack_range = 250
+
+    def on_reach_target(self) -> None:
+        arrow = Arrow(self.unit_layer, self.screen, self.rect.center[0], self.rect.center[1], 1)
+        arrow.set_target(self.unit_layer.player)
+        self.unit_layer.add_non_collide(arrow)
