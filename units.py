@@ -43,6 +43,9 @@ class BaseUnit(Sprite):
         self.screen.blit(self.image, self.rect)
         # pygame.draw.rect(self.screen, RED, self.rect, 2)
         # pygame.draw.circle(self.screen, GREEN, self.rect.center, self.radius, 2)
+        self.draw_text()
+
+    def draw_text(self) -> None:
         if self.max_hp:
             img2 = FONT.render(f'{self.hp} / {self.max_hp}', True, RED)
             x, y = self.rect.topleft
@@ -113,6 +116,7 @@ class MovingToTargetUnit(BaseUnit):
 class BaseMissile(MovingToTargetUnit):
     image_path = None
     move_speed = None
+    rotate = False
 
     def __init__(self, unit_layer, screen: Surface, initial_x: int = 0, initial_y: int = 0, damage: int = 0):
         super().__init__(unit_layer, screen, initial_x, initial_y)
@@ -127,17 +131,31 @@ class BaseMissile(MovingToTargetUnit):
 
     def draw(self) -> None:
         self.make_movement_step()
-        super().draw()
+        if self.rotate:
+            direction_x = self.target.rect.center[0] - self.rect.center[0]
+            direction_y = self.target.rect.center[1] - self.rect.center[1]
+            angle = math.degrees(math.atan2(direction_x, direction_y)) - 90
+            print(angle)
+
+            rotated_image = pygame.transform.rotate(self.image, angle)
+            rect_for_draw = rotated_image.get_rect()
+            rect_for_draw.center = self.rect.center
+            self.screen.blit(rotated_image, rect_for_draw)
+            self.draw_text()
+        else:
+            super().draw()
 
 
 class Fireball(BaseMissile):
     image_path = "resources/units/fireball.png"
     move_speed = 120 / FPS
+    rotate = True
 
 
 class Arrow(BaseMissile):
     image_path = "resources/units/arrow.png"
     move_speed = 240 / FPS
+    rotate = True
 
 
 class BaseEnemy(MovingToTargetUnit):
