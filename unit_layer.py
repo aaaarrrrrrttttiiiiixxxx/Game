@@ -4,7 +4,9 @@ from pygame import Surface
 from pygame.sprite import Group, spritecollide
 
 from config import CAMERA_MOVE, WIDTH, HEIGHT
-from units import BaseUnit, Player, Goblin, GoblinArcher, BaseEnemy
+from units.base_units import BaseUnit
+from units.enemies import Goblin, GoblinArcher, BaseEnemy
+from units.player import Player
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)

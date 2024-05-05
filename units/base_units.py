@@ -7,8 +7,7 @@ import pygame
 from pygame import Surface
 from pygame.sprite import Sprite
 
-import unit_layer
-from config import FONT, RED, FPS, HIT_NEAREST
+from config import FONT, RED, FPS
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)
@@ -24,6 +23,8 @@ class BaseUnit(Sprite):
         super(BaseUnit, self).__init__()
         self.image = pygame.image.load(self.image_path)
         self.rect = self.image.get_rect()
+        self.rect.width /= 2
+        self.rect.height /= 2
         self.rect.center = (initial_x, initial_y)
         self.hp = self.max_hp
         self.hp_regen = self.base_hp_regen
@@ -87,20 +88,6 @@ class BaseUnit(Sprite):
         return int(math.sqrt(self.rect.w ** 2 + self.rect.h ** 2) / 2)
 
 
-class Player(BaseUnit):
-    image_path = "resources/units/player.png"
-    max_hp = 1000000
-    base_hp_regen = 0.5
-    damage = 10
-    attack_speed = 1
-
-    def _attack(self):
-        fireball = Fireball(self.unit_layer, self.screen, self.rect.center[0], self.rect.center[1], self.damage)
-        find_target_pos = self.rect.center if HIT_NEAREST else pygame.mouse.get_pos()
-        fireball.set_target(self.unit_layer.get_nearest_mob(*find_target_pos))
-        self.unit_layer.add_non_collide(fireball)
-
-
 class MovingToTargetUnit(BaseUnit):
     move_speed = None
 
@@ -119,8 +106,8 @@ class MovingToTargetUnit(BaseUnit):
         return math.sqrt(distance_x ** 2 + distance_y ** 2) < self.move_speed
 
     def make_movement_step(self, use_collide: bool = False) -> None:
-        direction_x = self.target.rect.center[0] - self.rect.center[0]
-        direction_y = self.target.rect.center[1] - self.rect.center[1]
+        direction_x = self.target.rect.centerx - self.rect.centerx
+        direction_y = self.target.rect.centery - self.rect.centery
         if self.reach_target(direction_x, direction_y):
             self.on_reach_target()
             return
@@ -140,105 +127,4 @@ class MovingToTargetUnit(BaseUnit):
             self.move(diff_x, diff_y)
 
     def move(self, diff_x: int, diff_y: int) -> None:
-        self.rect.center = (self.rect.center[0] + diff_x, self.rect.center[1] + diff_y)
-
-
-class BaseMissile(MovingToTargetUnit):
-    image_path = None
-    move_speed = None
-    rotate = False
-
-    def __init__(self, unit_layer, screen: Surface, initial_x: int = 0, initial_y: int = 0, damage: int = 0):
-        super().__init__(unit_layer, screen, initial_x, initial_y)
-        self.damage = damage
-
-    def on_reach_target(self) -> None:
-        self.rect.center = self.target.rect.center
-        self.image = pygame.image.load("resources/units/explosion.png")
-        super().draw()
-        self.kill()
-        self.target.got_attack(self.damage)
-
-    def draw(self) -> None:
-        if self.rotate:
-            direction_x = self.target.rect.center[0] - self.rect.center[0]
-            direction_y = self.target.rect.center[1] - self.rect.center[1]
-            angle = math.degrees(math.atan2(direction_x, direction_y)) - 90
-
-            rotated_image = pygame.transform.rotate(self.image, angle)
-            rect_for_draw = rotated_image.get_rect()
-            rect_for_draw.center = self.rect.center
-            self.screen.blit(rotated_image, rect_for_draw)
-            self.draw_text()
-        else:
-            super().draw()
-
-    def process_next_frame(self):
-        super().process_next_frame()
-        self.make_movement_step()
-
-
-class Fireball(BaseMissile):
-    image_path = "resources/units/fireball.png"
-    move_speed = 120 / FPS
-    rotate = True
-
-
-class Arrow(BaseMissile):
-    image_path = "resources/units/arrow.png"
-    move_speed = 240 / FPS
-    rotate = True
-
-
-class BaseEnemy(MovingToTargetUnit):
-    image_path = None
-    max_hp = None
-    move_speed = None
-    damage = None
-    attack_range = None
-    spawn_rate = 0
-
-    def reach_target(self, distance_x: int, distance_y: int) -> bool:
-        attack_range = self.attack_range or self.radius + self.unit_layer.player.radius  # calc melee attack range
-        return math.sqrt(distance_x ** 2 + distance_y ** 2) < attack_range
-
-    def on_reach_target(self) -> None:
-        self.attack()
-
-    def _attack(self):
-        self.target.got_attack(self.damage)
-        print(f'{id(self)} {self.damage}')
-
-    def draw(self) -> None:
-        super().draw()
-
-    def process_next_frame(self):
-        super().process_next_frame()
-        if self.target is not None:
-            self.make_movement_step(True)
-
-
-class Goblin(BaseEnemy):
-    image_path = "resources/units/goblin_64.png"
-    max_hp = 50
-    move_speed = 60 / FPS
-    damage = 3
-    attack_range = None
-    spawn_rate = 20
-    attack_speed = 0.5
-
-
-class GoblinArcher(BaseEnemy):
-    image_path = "resources/units/goblin_archer.png"
-    max_hp = 25
-    move_speed = 30 / FPS
-    damage = 6
-    attack_range = 250
-    spawn_rate = 10
-    attack_speed = 0.33
-
-    def _attack(self):
-        arrow = Arrow(self.unit_layer, self.screen, self.rect.center[0], self.rect.center[1], 1)
-        arrow.set_target(self.unit_layer.player)
-        self.unit_layer.add_non_collide(arrow)
-        print(f'{id(self)} {self.damage}')
+        self.rect.center = (self.rect.centerx + diff_x, self.rect.centery + diff_y)

@@ -1,7 +1,6 @@
 from config import *
 from unit_generator import UnitGenerator
 from unit_layer import UnitLayer
-from units import Fireball
 
 pygame.init()
 screen = pygame.display.set_mode((WIDTH, HEIGHT))

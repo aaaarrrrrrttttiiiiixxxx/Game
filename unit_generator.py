@@ -4,7 +4,7 @@ from typing import Type, List
 
 from config import FPS
 from unit_layer import UnitLayer
-from units import BaseEnemy
+from units.enemies import BaseEnemy
 
 
 class UnitGenerator:
