@@ -135,7 +135,6 @@ class BaseMissile(MovingToTargetUnit):
             direction_x = self.target.rect.center[0] - self.rect.center[0]
             direction_y = self.target.rect.center[1] - self.rect.center[1]
             angle = math.degrees(math.atan2(direction_x, direction_y)) - 90
-            print(angle)
 
             rotated_image = pygame.transform.rotate(self.image, angle)
             rect_for_draw = rotated_image.get_rect()
@@ -164,6 +163,7 @@ class BaseEnemy(MovingToTargetUnit):
     move_speed = None
     damage = None
     attack_range = None
+    spawn_rate = 0
 
     def reach_target(self, distance_x: int, distance_y: int) -> bool:
         attack_range = self.attack_range or self.radius + self.unit_layer.player.radius  # calc melee attack range
@@ -184,6 +184,7 @@ class Goblin(BaseEnemy):
     move_speed = 60 / FPS
     damage = 1
     attack_range = None
+    spawn_rate = 20
 
 
 class GoblinArcher(BaseEnemy):
@@ -192,6 +193,7 @@ class GoblinArcher(BaseEnemy):
     move_speed = 30 / FPS
     damage = 1
     attack_range = 250
+    spawn_rate = 10
 
     def on_reach_target(self) -> None:
         arrow = Arrow(self.unit_layer, self.screen, self.rect.center[0], self.rect.center[1], 1)

@@ -1,4 +1,5 @@
 from config import *
+from unit_generator import UnitGenerator
 from unit_layer import UnitLayer
 from units import Fireball
 
@@ -12,6 +13,7 @@ unit_layer = UnitLayer(screen)
 player = unit_layer.create_player()
 goblin = unit_layer.create_goblin(100, 350)
 unit_layer.create_goblin_archer(230, 270)
+unit_generator = UnitGenerator(unit_layer)
 
 running = True
 while running:
@@ -42,6 +44,8 @@ while running:
         unit_layer.move_player(player_move_speed, 0)
 
     screen.fill(BLUE)
+
+    unit_generator.step()
 
     unit_layer.draw()
 
