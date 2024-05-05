@@ -16,6 +16,7 @@ unit_layer.create_goblin_archer(230, 270)
 unit_generator = UnitGenerator(unit_layer)
 
 running = True
+pause = False
 while running:
     clock.tick(FPS)
 
@@ -23,30 +24,27 @@ while running:
         if event.type == pygame.QUIT:
             running = False
         if event.type == pygame.KEYDOWN:
-            if event.key in [pygame.K_1, pygame.K_2]:
-                fireball = Fireball(unit_layer, screen, player.rect.center[0], player.rect.center[1], 1)
-                fireball.set_target(unit_layer.get_nearest_mob(*pygame.mouse.get_pos()))
-                unit_layer.add_non_collide(fireball)
-            if event.key in [pygame.K_3, pygame.K_4]:
-                fireball = Fireball(unit_layer, screen, player.rect.center[0], player.rect.center[1], 1)
-                fireball.set_target(unit_layer.get_nearest_mob(*player.rect.center))
-                unit_layer.add_non_collide(fireball)
+            if event.key in [pygame.K_F9, ]:
+                pause = not pause
 
     player_move_speed = int(120 / FPS)
-    keys = pygame.key.get_pressed()
-    if keys[pygame.K_w]:
-        unit_layer.move_player(0, -player_move_speed)
-    if keys[pygame.K_a]:
-        unit_layer.move_player(-player_move_speed, 0)
-    if keys[pygame.K_s]:
-        unit_layer.move_player(0, player_move_speed)
-    if keys[pygame.K_d]:
-        unit_layer.move_player(player_move_speed, 0)
+
+    if not pause:
+        keys = pygame.key.get_pressed()
+        if keys[pygame.K_w]:
+            unit_layer.move_player(0, -player_move_speed)
+        if keys[pygame.K_a]:
+            unit_layer.move_player(-player_move_speed, 0)
+        if keys[pygame.K_s]:
+            unit_layer.move_player(0, player_move_speed)
+        if keys[pygame.K_d]:
+            unit_layer.move_player(player_move_speed, 0)
+
+        player.attack()
+        unit_generator.step()
+        unit_layer.process_next_frame()
 
     screen.fill(BLUE)
-
-    unit_generator.step()
-
     unit_layer.draw()
 
     pygame.display.flip()

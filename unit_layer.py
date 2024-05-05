@@ -53,6 +53,12 @@ class UnitLayer:
         for unit in self.non_collide:
             unit.draw()
 
+    def process_next_frame(self) -> None:
+        for unit in self.units:
+            unit.process_next_frame()
+        for unit in self.non_collide:
+            unit.process_next_frame()
+
     def move(self, sprite: BaseUnit, diff_x: int, diff_y: int) -> None:
         if diff_x != 0 and diff_y != 0:
             raise Exception('Diagonal move is not suppoted')
