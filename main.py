@@ -1,3 +1,5 @@
+from upgrades import *
+from ability_choose_screen import AbilityChooseScreen
 from config import *
 from unit_generator import UnitGenerator
 from unit_layer import UnitLayer
@@ -16,6 +18,8 @@ unit_generator = UnitGenerator(unit_layer)
 
 running = True
 pause = False
+menu = None
+
 while running:
     clock.tick(FPS)
 
@@ -25,11 +29,16 @@ while running:
         if event.type == pygame.KEYDOWN:
             if event.key in [pygame.K_F9, ]:
                 pause = not pause
+        if event.type == LVL_UP:
+            pause = True
+            menu = AbilityChooseScreen(screen, [HPUpgrade(), HPRagenUpgrade(), DamageUpgrade()])
+        if menu is not None:
+            menu.handle_event(event)
 
     player_move_speed = int(120 / FPS)
 
+    keys = pygame.key.get_pressed()
     if not pause:
-        keys = pygame.key.get_pressed()
         if keys[pygame.K_w]:
             unit_layer.move_player(0, -player_move_speed)
         if keys[pygame.K_a]:
@@ -43,8 +52,18 @@ while running:
         unit_generator.step()
         unit_layer.process_next_frame()
 
+
+
     screen.fill(BLUE)
     unit_layer.draw()
+    if menu is not None:
+        res = menu.result
+        if res is not None:
+            res.upgrade(player)
+            pause = False
+            menu = None
+        else:
+            menu.draw()
 
     pygame.display.flip()
 

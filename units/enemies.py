@@ -12,6 +12,7 @@ class BaseEnemy(MovingToTargetUnit):
     damage = None
     attack_range = None
     spawn_rate = 0
+    exp = 0
 
     def reach_target(self, distance_x: int, distance_y: int) -> bool:
         attack_range = self.attack_range or self.radius + self.unit_layer.player.radius  # calc melee attack range
@@ -20,17 +21,21 @@ class BaseEnemy(MovingToTargetUnit):
     def on_reach_target(self) -> None:
         self.attack()
 
-    def _attack(self):
+    def _attack(self) -> None:
         self.target.got_attack(self.damage)
         print(f'{id(self)} {self.damage}')
 
     def draw(self) -> None:
         super().draw()
 
-    def process_next_frame(self):
+    def process_next_frame(self) -> None:
         super().process_next_frame()
         if self.target is not None:
             self.make_movement_step(True)
+
+    def _dead(self) -> None:
+        super()._dead()
+        self.unit_layer.player.add_exp(self.exp)
 
 
 class Goblin(BaseEnemy):
@@ -41,6 +46,7 @@ class Goblin(BaseEnemy):
     attack_range = None
     spawn_rate = 20
     attack_speed = 0.5
+    exp = 10
 
 
 class GoblinArcher(BaseEnemy):
@@ -51,8 +57,9 @@ class GoblinArcher(BaseEnemy):
     attack_range = 250
     spawn_rate = 10
     attack_speed = 0.33
+    exp = 20
 
-    def _attack(self):
+    def _attack(self) -> None:
         arrow = Arrow(self.unit_layer, self.screen, self.rect.centerx, self.rect.centery, 1)
         arrow.set_target(self.unit_layer.player)
         self.unit_layer.add_non_collide(arrow)

@@ -1,4 +1,5 @@
 import logging
+from typing import Optional
 
 from pygame import Surface
 from pygame.sprite import Group, spritecollide
@@ -92,7 +93,9 @@ class UnitLayer:
                 self.player.rect.bottom > HEIGHT * (1 - CAMERA_MOVE)):
             self.all_sprites.update('move', diff_x=-diff_x, diff_y=-diff_y)
 
-    def get_nearest_mob(self, x: int, y: int) -> BaseUnit:
+    def get_nearest_mob(self, x: int, y: int) -> Optional[BaseUnit]:
+        if len(self.units) <= 1:
+            return None
         self.units.remove(self.player)
         res = sorted(self.units, key=lambda s: s.dist_from(x, y))[0]
         self.add(self.player)

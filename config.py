@@ -18,6 +18,9 @@ BLUE = (0, 0, 255)
 
 pygame.font.init()
 FONT = pygame.font.SysFont(None, 16)
+UPGRADE_FONT = pygame.font.SysFont(None, 28)
+
+LVL_UP = pygame.USEREVENT + 1
 
 LOGGING_CONFIG = {
     'version': 1,

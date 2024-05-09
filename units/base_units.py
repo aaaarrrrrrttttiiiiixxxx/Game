@@ -68,7 +68,10 @@ class BaseUnit(Sprite):
     def got_attack(self, damage: int) -> None:
         self.hp -= damage
         if self.hp <= 0:
-            self.kill()
+            self._dead()
+
+    def _dead(self):
+        self.kill()
 
     def process_next_frame(self):
         if self.max_hp and self.hp and self.hp_regen:
