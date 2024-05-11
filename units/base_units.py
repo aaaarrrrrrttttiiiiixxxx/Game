@@ -66,8 +66,8 @@ class BaseUnit(Sprite):
             y -= 10
             self.screen.blit(img2, (x, y))
 
-    def got_attack(self, damage: int) -> None:
-        self.hp -= damage
+    def got_attack(self, incoming_damage: int) -> None:
+        self.hp -= incoming_damage
         if self.hp <= 0:
             self._dead()
 
