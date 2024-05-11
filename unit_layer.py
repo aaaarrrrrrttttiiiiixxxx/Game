@@ -47,7 +47,7 @@ class UnitLayer:
         self.add_enemy(goblin)
         return goblin
 
-    def add_enemy(self, enemy: BaseEnemy):
+    def add_enemy(self, enemy: BaseEnemy) -> None:
         enemy.set_target(self.player)
         self.add(enemy)
 

@@ -17,7 +17,7 @@ class BaseEnemy(MovingToTargetUnit):
     lvl1_spawn_rate = 0
     lvl1_exp = 0
 
-    def __init__(self, unit_layer, screen: Surface, initial_x: int = 0, initial_y: int = 0):
+    def __init__(self, unit_layer, screen: Surface, initial_x: int = 0, initial_y: int = 0) -> None:
         self.max_hp = type(self).initial_max_hp()
         self.damage = type(self).initial_damage()
         self.exp = type(self).initial_exp()
@@ -46,25 +46,25 @@ class BaseEnemy(MovingToTargetUnit):
         self.unit_layer.player.add_exp(self.exp)
 
     @classmethod
-    def initial_damage(cls):
+    def initial_damage(cls) -> int:
         return cls._upgrade_by_time(cls.lvl1_damage, 0.1)
 
     @classmethod
-    def initial_exp(cls):
+    def initial_exp(cls) -> int:
         return cls._upgrade_by_time(cls.lvl1_exp, 0.1)
 
     @classmethod
-    def initial_max_hp(cls):
-        return cls._upgrade_by_time(cls.lvl1_max_hp, 0.1)
+    def initial_max_hp(cls) -> int:
+        return cls._upgrade_by_time(cls.lvl1_max_hp, 0.1, 5)
 
     @classmethod
-    def get_spawn_rate(cls):
-        print(cls._upgrade_by_time(cls.lvl1_spawn_rate, 0.1))
+    def get_spawn_rate(cls) -> int:
         return cls._upgrade_by_time(cls.lvl1_spawn_rate, 0.1)
 
     @staticmethod
-    def _upgrade_by_time(value: int, ratio: float) -> int:
-        return int(value + ratio * value * pygame.time.get_ticks() / 1000 / 60)
+    def _upgrade_by_time(value: int, ratio: float, round_factor: int = 1) -> int:
+        res = value + ratio * value * pygame.time.get_ticks() / 1000 / 60
+        return round_factor * round(int(res) / round_factor)
 
 
 class Goblin(BaseEnemy):

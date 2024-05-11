@@ -20,7 +20,7 @@ class BaseUnit(Sprite):
     base_hp_regen = 0
     attack_speed = None
 
-    def __init__(self, unit_layer, screen: Surface, initial_x: int = 0, initial_y: int = 0):
+    def __init__(self, unit_layer, screen: Surface, initial_x: int = 0, initial_y: int = 0) -> None:
         super(BaseUnit, self).__init__()
         self.image = ImageProvider.get_image_by_path(self.image_path)
         self.rect = self.image.get_rect()
@@ -51,12 +51,12 @@ class BaseUnit(Sprite):
         # pygame.draw.circle(self.screen, GREEN, self.rect.center, self.radius, 2)
         self.draw_text()
 
-    def attack(self):
+    def attack(self) -> None:
         if self.attack_speed and self.attack_freeze <= 0:
             self._attack()
             self.attack_freeze = FPS / self.attack_speed
 
-    def _attack(self):
+    def _attack(self) -> None:
         pass
 
     def draw_text(self) -> None:
@@ -71,10 +71,10 @@ class BaseUnit(Sprite):
         if self.hp <= 0:
             self._dead()
 
-    def _dead(self):
+    def _dead(self) -> None:
         self.kill()
 
-    def process_next_frame(self):
+    def process_next_frame(self) -> None:
         if self.max_hp and self.hp and self.hp_regen:
             self.hp += self.hp_regen / FPS
             if self.hp > self.max_hp:
@@ -95,7 +95,7 @@ class BaseUnit(Sprite):
 class MovingToTargetUnit(BaseUnit):
     move_speed = None
 
-    def __init__(self, unit_layer, screen: Surface, initial_x: int = 0, initial_y: int = 0):
+    def __init__(self, unit_layer, screen: Surface, initial_x: int = 0, initial_y: int = 0) -> None:
         super().__init__(unit_layer, screen, initial_x, initial_y)
         self.target = None
         self.rect.center = initial_x, initial_y

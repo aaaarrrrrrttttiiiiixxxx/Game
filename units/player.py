@@ -51,12 +51,12 @@ class BaseImageStore:
 
 class PlayerImageProvider:
 
-    def __init__(self):
+    def __init__(self) -> None:
         self.stores = [ImageStore("resources/units/player/attack"),
                        ImageStore("resources/units/player/run"),
                        BaseImageStore('resources/units/player/base.png')]
 
-    def next_frame(self):
+    def next_frame(self) -> None:
         for store in self.stores:
             store.next_frame()
 
@@ -66,10 +66,10 @@ class PlayerImageProvider:
             if image is not None:
                 return image
 
-    def change_direction(self, is_left: bool):
+    def change_direction(self, is_left: bool) -> None:
         self.stores[1].reload(is_left)
 
-    def attack(self, is_left: bool):
+    def attack(self, is_left: bool) -> None:
         self.stores[0].reload(is_left)
 
 

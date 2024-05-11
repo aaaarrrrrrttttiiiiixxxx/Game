@@ -13,7 +13,7 @@ class BaseMissile(MovingToTargetUnit):
     move_speed = None
     rotate = False
 
-    def __init__(self, unit_layer, screen: Surface, initial_x: int = 0, initial_y: int = 0, damage: int = 0):
+    def __init__(self, unit_layer, screen: Surface, initial_x: int = 0, initial_y: int = 0, damage: int = 0) -> None:
         super().__init__(unit_layer, screen, initial_x, initial_y)
         self.damage = damage
 
@@ -38,7 +38,7 @@ class BaseMissile(MovingToTargetUnit):
         else:
             super().draw()
 
-    def process_next_frame(self):
+    def process_next_frame(self) -> None:
         super().process_next_frame()
         self.make_movement_step()
 
