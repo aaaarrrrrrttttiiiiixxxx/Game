@@ -7,7 +7,7 @@ from pygame.sprite import Group, spritecollide
 from config import CAMERA_MOVE, WIDTH, HEIGHT
 from units.base_units import BaseUnit
 from units.enemies import Goblin, GoblinArcher, BaseEnemy
-from units.player import Player
+from units.player import Player, PlayerImageProvider
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)
@@ -30,8 +30,9 @@ class UnitLayer:
         self.non_collide.add(sprite)
         self.all_sprites.add(sprite)
 
-    def create_player(self, initial_x: int = None, initial_y: int = None) -> Player:
-        self.player = Player(self, self.screen, initial_x or WIDTH / 2, initial_y or HEIGHT / 2)
+    def create_player(self, image_provider: PlayerImageProvider, initial_x: int = None,
+                      initial_y: int = None) -> Player:
+        self.player = Player(self, image_provider, self.screen, initial_x or WIDTH / 2, initial_y or HEIGHT / 2)
         self.units.add(self.player)
         self.all_sprites.add(self.player)
         return self.player
@@ -91,7 +92,7 @@ class UnitLayer:
                 self.player.rect.right > WIDTH * (1 - CAMERA_MOVE) or
                 self.player.rect.top < HEIGHT * CAMERA_MOVE or
                 self.player.rect.bottom > HEIGHT * (1 - CAMERA_MOVE)):
-            self.all_sprites.update('move', diff_x=-diff_x, diff_y=-diff_y)
+            self.all_sprites.update('move', diff_x=-diff_x, diff_y=-diff_y, screen=True)
 
     def get_nearest_mob(self, x: int, y: int) -> Optional[BaseUnit]:
         if len(self.units) <= 1:

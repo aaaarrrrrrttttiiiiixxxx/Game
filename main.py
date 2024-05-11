@@ -1,8 +1,12 @@
+from units.player import PlayerImageProvider
 from upgrades import *
 from ability_choose_screen import AbilityChooseScreen
 from config import *
 from unit_generator import UnitGenerator
 from unit_layer import UnitLayer
+
+logger = logging.getLogger(__name__)
+logger.setLevel(logging.DEBUG)
 
 pygame.init()
 screen = pygame.display.set_mode((WIDTH, HEIGHT))
@@ -11,7 +15,8 @@ clock = pygame.time.Clock()
 
 unit_layer = UnitLayer(screen)
 
-player = unit_layer.create_player()
+player_image_provider = PlayerImageProvider()
+player = unit_layer.create_player(player_image_provider)
 goblin = unit_layer.create_goblin(100, 350)
 unit_layer.create_goblin_archer(230, 270)
 unit_generator = UnitGenerator(unit_layer)
@@ -22,6 +27,7 @@ menu = None
 
 while running:
     clock.tick(FPS)
+    player_image_provider.next_frame()
 
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
@@ -52,8 +58,6 @@ while running:
         unit_generator.step()
         unit_layer.process_next_frame()
 
-
-
     screen.fill(BLUE)
     unit_layer.draw()
     if menu is not None:
@@ -66,5 +70,6 @@ while running:
             menu.draw()
 
     pygame.display.flip()
+    logger.debug("----------------------")
 
 pygame.quit()

@@ -4,6 +4,7 @@ import pygame
 from pygame import Surface
 
 from config import FPS
+from image_provider import ImageProvider
 from units.base_units import MovingToTargetUnit
 
 
@@ -18,7 +19,7 @@ class BaseMissile(MovingToTargetUnit):
 
     def on_reach_target(self) -> None:
         self.rect.center = self.target.rect.center
-        self.image = pygame.image.load("resources/units/explosion.png")
+        self.image = ImageProvider.get_image_by_path("resources/units/explosion.png")
         super().draw()
         self.kill()
         self.target.got_attack(self.damage)

@@ -8,6 +8,7 @@ from pygame import Surface
 from pygame.sprite import Sprite
 
 from config import FONT, RED, FPS
+from image_provider import ImageProvider
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)
@@ -21,7 +22,7 @@ class BaseUnit(Sprite):
 
     def __init__(self, unit_layer, screen: Surface, initial_x: int = 0, initial_y: int = 0):
         super(BaseUnit, self).__init__()
-        self.image = pygame.image.load(self.image_path)
+        self.image = ImageProvider.get_image_by_path(self.image_path)
         self.rect = self.image.get_rect()
         self.rect.width /= 2
         self.rect.height /= 2
@@ -33,7 +34,7 @@ class BaseUnit(Sprite):
         if self.attack_speed:
             self.attack_freeze = 0
 
-    def move(self, diff_x: int, diff_y: int) -> None:
+    def move(self, diff_x: int, diff_y: int, screen: bool = False) -> None:
         self.rect.x += diff_x
         self.rect.y += diff_y
 
@@ -129,5 +130,5 @@ class MovingToTargetUnit(BaseUnit):
         else:
             self.move(diff_x, diff_y)
 
-    def move(self, diff_x: int, diff_y: int) -> None:
+    def move(self, diff_x: int, diff_y: int, screen: bool = False) -> None:
         self.rect.center = (self.rect.centerx + diff_x, self.rect.centery + diff_y)

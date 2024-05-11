@@ -23,7 +23,6 @@ class BaseEnemy(MovingToTargetUnit):
 
     def _attack(self) -> None:
         self.target.got_attack(self.damage)
-        print(f'{id(self)} {self.damage}')
 
     def draw(self) -> None:
         super().draw()
@@ -63,4 +62,3 @@ class GoblinArcher(BaseEnemy):
         arrow = Arrow(self.unit_layer, self.screen, self.rect.centerx, self.rect.centery, 1)
         arrow.set_target(self.unit_layer.player)
         self.unit_layer.add_non_collide(arrow)
-        print(f'{id(self)} {self.damage}')

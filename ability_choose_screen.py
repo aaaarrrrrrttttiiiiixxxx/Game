@@ -5,6 +5,7 @@ from pygame import Surface
 from pygame.event import Event
 
 from config import WIDTH, HEIGHT, RED, UPGRADE_FONT
+from image_provider import ImageProvider
 from upgrades import BaseUpgrade
 
 
@@ -42,7 +43,7 @@ class AbilityChooseScreen:
 
 
 class UpgradeButton:
-    background_image = pygame.image.load("resources/menu/ability_choose.png")
+    background_image = ImageProvider.get_image_by_path("resources/menu/ability_choose.png")
 
     def __init__(self, screen: Surface, pos_x: int, pos_y: int, width: int, height: int, upgrade: BaseUpgrade,
                  callback: Callable = None, **kwargs) -> None:
