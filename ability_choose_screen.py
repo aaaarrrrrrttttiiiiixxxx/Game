@@ -1,4 +1,4 @@
-from typing import Callable, List, Tuple
+from typing import Callable, List, Tuple, Optional
 
 import pygame
 from pygame import Surface
@@ -14,10 +14,10 @@ class AbilityChooseScreen:
     def __init__(self, screen: Surface, upgrade_list: List[BaseUpgrade]) -> None:
         self.upgrade_list = upgrade_list
         self.screen = screen
-        self.buttons = []
+        self.buttons: List[UpgradeButton] = []
         self.init_buttons_row(2)
 
-        self.result = None
+        self.result: Optional[BaseUpgrade] = None
 
     def draw(self) -> None:
         for button in self.buttons:
@@ -25,9 +25,9 @@ class AbilityChooseScreen:
 
     def init_buttons_row(self, padding_ratio: int) -> None:
         count_x = len(self.upgrade_list)
-        padding_x = WIDTH / (count_x + 1 + count_x * padding_ratio)
+        padding_x = WIDTH // (count_x + 1 + count_x * padding_ratio)
         size_x = padding_x * padding_ratio
-        padding_y = HEIGHT / 4
+        padding_y = HEIGHT // 4
         size_y = padding_y * 2
         for x in range(count_x):
             self.buttons.append(
@@ -46,7 +46,7 @@ class UpgradeButton:
     background_image = ImageProvider.get_image_by_path("resources/menu/ability_choose.png")
 
     def __init__(self, screen: Surface, pos_x: int, pos_y: int, width: int, height: int, upgrade: BaseUpgrade,
-                 callback: Callable = None, **kwargs) -> None:
+                 callback: Callable, **kwargs) -> None:
         self.rect = pygame.Rect(pos_x, pos_y, width, height)
         self.screen = screen
         self.text, self.icon_image = upgrade.get_drawable()

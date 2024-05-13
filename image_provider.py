@@ -1,9 +1,11 @@
+from typing import Dict, Any
+
 import pygame
 from pygame import Surface
 
 
 class ImageProvider:
-    loaded_images = {}
+    loaded_images: dict[str, Surface] = {}
 
     @classmethod
     def get_image_by_path(cls, path: str) -> Surface:

@@ -17,8 +17,8 @@ GREEN = (0, 255, 0)
 BLUE = (0, 0, 255)
 
 pygame.font.init()
-FONT = pygame.font.SysFont(None, 16)
-UPGRADE_FONT = pygame.font.SysFont(None, 28)
+FONT = pygame.font.SysFont(None, 16)  # type: ignore
+UPGRADE_FONT = pygame.font.SysFont(None, 28)  # type: ignore
 
 LVL_UP = pygame.USEREVENT + 1
 

@@ -14,13 +14,13 @@ logger.setLevel(logging.DEBUG)
 
 
 class UnitLayer:
-    def __init__(self, screen: Surface) -> None:
+    def __init__(self, screen: Surface, image_provider: PlayerImageProvider) -> None:
         super().__init__()
-        self.units = Group()
-        self.non_collide = Group()
-        self.all_sprites = Group()
-        self.player = None
+        self.units = Group()  # type: Group
+        self.non_collide = Group()  # type: Group
+        self.all_sprites = Group()  # type: Group
         self.screen = screen
+        self.player = self._create_player(image_provider)
 
     def add(self, sprite: BaseUnit) -> None:
         self.units.add(sprite)
@@ -30,9 +30,8 @@ class UnitLayer:
         self.non_collide.add(sprite)
         self.all_sprites.add(sprite)
 
-    def create_player(self, image_provider: PlayerImageProvider, initial_x: int = None,
-                      initial_y: int = None) -> Player:
-        self.player = Player(self, image_provider, self.screen, initial_x or WIDTH / 2, initial_y or HEIGHT / 2)
+    def _create_player(self, image_provider: PlayerImageProvider) -> Player:
+        self.player = Player(self, image_provider, self.screen, int(WIDTH / 2), int(WIDTH / 2))
         self.units.add(self.player)
         self.all_sprites.add(self.player)
         return self.player

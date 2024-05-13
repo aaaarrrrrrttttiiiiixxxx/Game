@@ -1,7 +1,7 @@
 import contextlib
 import logging
 import os
-from typing import List, Optional
+from typing import List, Optional, Union
 
 import pygame
 from pygame import Surface
@@ -18,7 +18,7 @@ logger.setLevel(logging.DEBUG)
 class ImageStore:
     def __init__(self, path: str) -> None:
         self.images = [f'{path}/{i}' for i in os.listdir(path)]
-        self.ind = len(self.images)
+        self.ind = float(len(self.images))
         self._is_left = False
 
     def next_frame(self) -> None:
@@ -30,7 +30,9 @@ class ImageStore:
 
     def get_image(self) -> Optional[Surface]:
         with contextlib.suppress(IndexError):
-            return pygame.transform.flip(ImageProvider.get_image_by_path(self.images[int(self.ind)]), self._is_left, False)
+            return pygame.transform.flip(ImageProvider.get_image_by_path(self.images[int(self.ind)]), self._is_left,
+                                         False)
+        return None
 
 
 class BaseImageStore:
@@ -45,22 +47,22 @@ class BaseImageStore:
     def reload(self, is_left: bool) -> None:
         self._is_left = is_left
 
-    def get_image(self) -> Optional[Surface]:
+    def get_image(self) -> Surface:
         return pygame.transform.flip(ImageProvider.get_image_by_path(self.img_path), self._is_left, False)
 
 
 class PlayerImageProvider:
 
     def __init__(self) -> None:
-        self.stores = [ImageStore("resources/units/player/attack"),
-                       ImageStore("resources/units/player/run"),
-                       BaseImageStore('resources/units/player/base.png')]
+        self.stores: List[Union[BaseImageStore, ImageStore]] = [ImageStore("resources/units/player/attack"),
+                                                                ImageStore("resources/units/player/run"),
+                                                                BaseImageStore('resources/units/player/base.png')]
 
     def next_frame(self) -> None:
         for store in self.stores:
             store.next_frame()
 
-    def get_current_image(self) -> Surface:
+    def get_current_image(self) -> Surface:  # type: ignore
         for store in self.stores:
             image = store.get_image()
             if image is not None:

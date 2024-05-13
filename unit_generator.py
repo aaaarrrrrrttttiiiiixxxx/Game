@@ -32,6 +32,6 @@ class UnitGenerator:
     def get_random_position(self) -> tuple[int, int]:
         angle = random.randint(0, 360)
         x, y = self.unit_layer.player.rect.center
-        x += math.cos(angle) * self.SPAWN_RANGE
-        y += math.sin(angle) * self.SPAWN_RANGE
+        x += int(math.cos(angle) * self.SPAWN_RANGE)
+        y += int(math.sin(angle) * self.SPAWN_RANGE)
         return x, y

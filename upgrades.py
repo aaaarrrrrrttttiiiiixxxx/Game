@@ -1,16 +1,16 @@
 from typing import Tuple
 
-import pygame
+from pygame import Surface
 
 from image_provider import ImageProvider
 from units.player import Player
 
 
 class BaseUpgrade:
-    text = None
-    image = None
+    text: str
+    image: Surface
 
-    def get_drawable(self) -> Tuple[str, str]:
+    def get_drawable(self) -> Tuple[str, Surface]:
         return self.text, self.image
 
     def upgrade(self, player: Player) -> None:
@@ -18,8 +18,8 @@ class BaseUpgrade:
 
 
 class HPUpgrade(BaseUpgrade):
-    text = "+ 25 HP"
-    image = ImageProvider.get_image_by_path("resources/icons/128/HeartFull.png")
+    text: str = '+ 25 HP'
+    image: Surface = ImageProvider.get_image_by_path("resources/icons/128/HeartFull.png")
 
     def upgrade(self, player: Player) -> None:
         player.max_hp += 25
@@ -27,16 +27,16 @@ class HPUpgrade(BaseUpgrade):
 
 
 class HPRagenUpgrade(BaseUpgrade):
-    text = "+ 1 HP regen"
-    image = ImageProvider.get_image_by_path("resources/icons/128/PotionRed.png")
+    text: str = '+ 1 HP regen'
+    image: Surface = ImageProvider.get_image_by_path("resources/icons/128/PotionRed.png")
 
     def upgrade(self, player: Player) -> None:
         player.hp_regen += 1
 
 
 class DamageUpgrade(BaseUpgrade):
-    text = "+ 5 damage"
-    image = ImageProvider.get_image_by_path("resources/icons/128/SwordT2.png")
+    text: str = '+ 5 damage'
+    image: Surface = ImageProvider.get_image_by_path("resources/icons/128/SwordT2.png")
 
     def upgrade(self, player: Player) -> None:
         player.damage += 5

@@ -9,23 +9,22 @@ from units.base_units import MovingToTargetUnit
 
 
 class BaseMissile(MovingToTargetUnit):
-    image_path = None
-    move_speed = None
     rotate = False
 
     def __init__(self, unit_layer, screen: Surface, initial_x: int = 0, initial_y: int = 0, damage: int = 0) -> None:
         super().__init__(unit_layer, screen, initial_x, initial_y)
         self.damage = damage
 
-    def on_reach_target(self) -> None:
-        self.rect.center = self.target.rect.center
-        self.image = ImageProvider.get_image_by_path("resources/units/explosion.png")
-        super().draw()
-        self.kill()
-        self.target.got_attack(self.damage)
+    def _on_reach_target(self) -> None:
+        if self.target is not None:
+            self.rect.center = self.target.rect.center
+            self.image = ImageProvider.get_image_by_path("resources/units/explosion.png")
+            super().draw()
+            self.kill()
+            self.target.got_attack(self.damage)
 
     def draw(self) -> None:
-        if self.rotate:
+        if self.rotate and self.target:
             direction_x = self.target.rect.centerx - self.rect.centerx
             direction_y = self.target.rect.centery - self.rect.centery
             angle = math.degrees(math.atan2(direction_x, direction_y)) - 90

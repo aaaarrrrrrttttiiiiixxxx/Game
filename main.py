@@ -13,10 +13,9 @@ screen = pygame.display.set_mode((WIDTH, HEIGHT))
 pygame.display.set_caption("My Game")
 clock = pygame.time.Clock()
 
-unit_layer = UnitLayer(screen)
-
 player_image_provider = PlayerImageProvider()
-player = unit_layer.create_player(player_image_provider)
+unit_layer = UnitLayer(screen, player_image_provider)
+
 goblin = unit_layer.create_goblin(100, 350)
 unit_layer.create_goblin_archer(230, 270)
 unit_generator = UnitGenerator(unit_layer)
@@ -54,7 +53,7 @@ while running:
         if keys[pygame.K_d]:
             unit_layer.move_player(player_move_speed, 0)
 
-        player.attack()
+        unit_layer.player.attack()
         unit_generator.step()
         unit_layer.process_next_frame()
 
@@ -63,7 +62,7 @@ while running:
     if menu is not None:
         res = menu.result
         if res is not None:
-            res.upgrade(player)
+            res.upgrade(unit_layer.player)
             pause = False
             menu = None
         else:

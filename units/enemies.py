@@ -1,4 +1,5 @@
 import math
+from typing import Union, Optional
 
 import pygame
 from pygame import Surface
@@ -9,16 +10,16 @@ from units.missiles import Arrow
 
 
 class BaseEnemy(MovingToTargetUnit):
-    image_path = None
-    move_speed = None
-    attack_range = None
-    lvl1_damage = None
-    lvl1_max_hp = None
-    lvl1_spawn_rate = 0
-    lvl1_exp = 0
+    image_path: str
+    move_speed: Union[int, float]
+    attack_range: Optional[int]
+    lvl1_damage: int
+    lvl1_max_hp: int
+    lvl1_spawn_rate: int = 0
+    lvl1_exp: int = 0
 
     def __init__(self, unit_layer, screen: Surface, initial_x: int = 0, initial_y: int = 0) -> None:
-        self.max_hp = type(self).initial_max_hp()
+        self.max_hp: int = type(self).initial_max_hp()
         self.damage = type(self).initial_damage()
         self.exp = type(self).initial_exp()
         super().__init__(unit_layer, screen, initial_x, initial_y)
@@ -27,11 +28,12 @@ class BaseEnemy(MovingToTargetUnit):
         attack_range = self.attack_range or self.radius + self.unit_layer.player.radius  # calc melee attack range
         return math.sqrt(distance_x ** 2 + distance_y ** 2) < attack_range
 
-    def on_reach_target(self) -> None:
+    def _on_reach_target(self) -> None:
         self.attack()
 
     def _attack(self) -> None:
-        self.target.got_attack(self.damage)
+        if self.target:
+            self.target.got_attack(self.damage)
 
     def draw(self) -> None:
         super().draw()
