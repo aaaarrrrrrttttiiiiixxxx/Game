@@ -6,6 +6,7 @@ from typing import List, Optional, Union
 import pygame
 from pygame import Surface
 
+from abilities import BaseAbility
 from config import HIT_NEAREST, LVL_UP, WIDTH, GREEN, HEIGHT
 from image_provider import ImageProvider
 from units.base_units import BaseUnit
@@ -79,7 +80,7 @@ class Player(BaseUnit):
     image_path = "resources/units/player/attack/attack_01.png"
     max_hp = 100
     base_hp_regen = 0.5
-    damage = 10
+    damage = 30
     attack_speed = 1
 
     def __init__(self, unit_layer, image_provider: PlayerImageProvider, screen: Surface, initial_x: int = 0,
@@ -89,13 +90,7 @@ class Player(BaseUnit):
         self.level = 1
         self.exp = 0
 
-    # def _attack(self) -> None: # fireball
-    #     find_target_pos = self.rect.center if HIT_NEAREST else pygame.mouse.get_pos()
-    #     mob = self.unit_layer.get_nearest_mob(*find_target_pos)
-    #     if mob is not None:
-    #         fireball = Fireball(self.unit_layer, self.screen, self.rect.centerx, self.rect.centery, self.damage)
-    #         fireball.set_target(mob)
-    #         self.unit_layer.add_non_collide(fireball)
+        self.abilities: List[BaseAbility] = []
 
     def _attack(self) -> None:  # melee
         mob = self.unit_layer.get_nearest_mob(*self.rect.center)
@@ -122,9 +117,22 @@ class Player(BaseUnit):
         self.image = self.image_provider.get_current_image()
         super().draw()
         self.draw_exp_line()
+        self.draw_abilities()
+
+    def draw_abilities(self) -> None:
+        for ability in self.abilities:
+            ability.draw()
 
     def move(self, diff_x: int, diff_y: int, screen: bool = False) -> None:
         super().move(diff_x, diff_y)
         logger.debug(f"move {diff_x} {diff_y}")
         if diff_x != 0 and not screen:
             self.image_provider.change_direction(diff_x < 0)
+
+    def process_next_frame(self) -> None:
+        super().process_next_frame()
+        for ability in self.abilities:
+            ability.process_next_frame()
+
+    def use_ability(self, ind: int) -> None:
+        self.abilities[ind].use(self)

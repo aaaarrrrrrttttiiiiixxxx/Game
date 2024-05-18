@@ -1,3 +1,8 @@
+import contextlib
+from random import shuffle
+
+import pygame
+
 from units.player import PlayerImageProvider
 from upgrades import *
 from ability_choose_screen import AbilityChooseScreen
@@ -24,19 +29,27 @@ running = True
 pause = False
 menu = None
 
+upgrade_factory = UpgradeFactory()
+
 while running:
     clock.tick(FPS)
     player_image_provider.next_frame()
+    screen.fill(BLUE)
 
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             running = False
         if event.type == pygame.KEYDOWN:
-            if event.key in [pygame.K_F9, ]:
-                pause = not pause
+            ability_keys = [pygame.K_1, pygame.K_2, pygame.K_3, pygame.K_4, pygame.K_5, pygame.K_6]
+            with contextlib.suppress(ValueError, IndexError):
+                ind = ability_keys.index(event.key)
+                if ind != -1:
+                    unit_layer.player.use_ability(ind)
         if event.type == LVL_UP:
             pause = True
-            menu = AbilityChooseScreen(screen, [HPUpgrade(), HPRagenUpgrade(), DamageUpgrade()])
+            upgrade_list = upgrade_factory.get_all_upgrades()
+            shuffle(upgrade_list)
+            menu = AbilityChooseScreen(screen, upgrade_list[:3])
         if menu is not None:
             menu.handle_event(event)
 
@@ -57,7 +70,6 @@ while running:
         unit_generator.step()
         unit_layer.process_next_frame()
 
-    screen.fill(BLUE)
     unit_layer.draw()
     if menu is not None:
         res = menu.result

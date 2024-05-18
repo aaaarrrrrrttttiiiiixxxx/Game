@@ -77,7 +77,7 @@ class Goblin(BaseEnemy):
     lvl1_damage = 5
     lvl1_max_hp = 50
     lvl1_spawn_rate = 20
-    lvl1_exp = 10
+    lvl1_exp = 35
 
 
 class GoblinArcher(BaseEnemy):
@@ -88,7 +88,7 @@ class GoblinArcher(BaseEnemy):
     lvl1_damage = 10
     lvl1_max_hp = 25
     lvl1_spawn_rate = 10
-    lvl1_exp = 20
+    lvl1_exp = 65
 
     def _attack(self) -> None:
         arrow = Arrow(self.unit_layer, self.screen, self.rect.centerx, self.rect.centery, 1)

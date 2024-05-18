@@ -59,15 +59,18 @@ class UpgradeButton:
         rect.center = self.rect.center
         self.screen.blit(image, rect)
 
-        if self.icon_image is not None:
-            image_rect = self.icon_image.get_rect()
-            image_rect.center = self._get_icon_position()
-            self.screen.blit(self.icon_image, image_rect)
+        icon = self._resize_image(self.icon_image)
+        image_rect = icon.get_rect()
+        image_rect.center = self._get_icon_position()
+        self.screen.blit(icon, image_rect)
 
         img2 = UPGRADE_FONT.render(self.text, True, RED)
         text_rect = img2.get_rect()
         text_rect.center = self._get_text_position()
         self.screen.blit(img2, text_rect)
+
+    def _resize_image(self, icon: Surface) -> Surface:
+        return pygame.transform.scale(icon, (HEIGHT // 4.5, HEIGHT // 4.5))
 
     def _get_icon_position(self) -> Tuple[int, int]:
         return self.rect.centerx, int(self.rect.y + self.rect.height / 5 * 2)
