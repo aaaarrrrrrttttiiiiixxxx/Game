@@ -6,11 +6,10 @@ from typing import List, Optional, Union
 import pygame
 from pygame import Surface
 
-from abilities import BaseAbility
-from config import HIT_NEAREST, LVL_UP, WIDTH, GREEN, HEIGHT
+from upgrades_and_abilities.base_abilities import BaseAbility
+from config import LVL_UP, WIDTH, GREEN, HEIGHT
 from image_provider import ImageProvider
 from units.base_units import BaseUnit
-from units.missiles import Fireball
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)
@@ -136,3 +135,13 @@ class Player(BaseUnit):
 
     def use_ability(self, ind: int) -> None:
         self.abilities[ind].use(self)
+
+    @property
+    def ability_names(self) -> List[str]:
+        return [a.name for a in self.abilities]
+
+    def ability_by_name(self, name: str) -> Optional[BaseAbility]:
+        for ability in self.abilities:
+            if ability.name == name:
+                return ability
+        return None

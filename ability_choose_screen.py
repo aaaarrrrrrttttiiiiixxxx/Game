@@ -6,7 +6,7 @@ from pygame.event import Event
 
 from config import WIDTH, HEIGHT, RED, UPGRADE_FONT
 from image_provider import ImageProvider
-from upgrades import BaseUpgrade
+from upgrades_and_abilities.upgrades import BaseUpgrade
 
 
 class AbilityChooseScreen:

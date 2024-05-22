@@ -1,10 +1,8 @@
 import contextlib
 from random import shuffle
 
-import pygame
-
 from units.player import PlayerImageProvider
-from upgrades import *
+from upgrades_and_abilities.upgrades import *
 from ability_choose_screen import AbilityChooseScreen
 from config import *
 from unit_generator import UnitGenerator
@@ -29,7 +27,7 @@ running = True
 pause = False
 menu = None
 
-upgrade_factory = UpgradeFactory()
+upgrade_factory = UpgradeFactory(unit_layer.player)
 
 while running:
     clock.tick(FPS)

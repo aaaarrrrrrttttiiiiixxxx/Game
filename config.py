@@ -16,6 +16,8 @@ RED = (255, 0, 0)
 GREEN = (0, 255, 0)
 BLUE = (0, 0, 255)
 
+ENEMY_SPAWN_RATE = 50
+
 pygame.font.init()
 FONT = pygame.font.SysFont(None, 16)  # type: ignore
 UPGRADE_FONT = pygame.font.SysFont(None, 28)  # type: ignore
