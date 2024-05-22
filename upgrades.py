@@ -46,22 +46,16 @@ class DamageUpgrade(BaseUpgrade):
 
 class UpgradeFactory:
 
+    def __init__(self) -> None:
+        self._init_ability_upgrades()
+
     def get_all_upgrades(self) -> List[BaseUpgrade]:
-        return self.upgrades
-
-    def __init__(self):
-        super().__init__()
-        self.upgrades = self._get_all_upgrades()
-
-    def _get_all_upgrades(self) -> List[BaseUpgrade]:
-        res = self._get_ability_upgrades()
         res = []
         for upgrade_class in BaseUpgrade.__subclasses__():
             res.append(upgrade_class())
         return res
 
-    def _get_ability_upgrades(self) -> List[BaseUpgrade]:
-        res = []
+    def _init_ability_upgrades(self):
         for ability_class in BaseAbility.__subclasses__():
             ability_upgrade_class = type(f"{ability_class.name}Upgrade", (BaseUpgrade,), dict())
             setattr(ability_upgrade_class, 'text', ability_class.name)
@@ -75,5 +69,3 @@ class UpgradeFactory:
                 player.abilities.append(ability_class(player.screen, pos_x + 5, 5))
 
             setattr(ability_upgrade_class, 'upgrade', upgrade)
-            res.append(ability_upgrade_class())
-        return res
