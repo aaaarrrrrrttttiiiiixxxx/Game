@@ -1,72 +1,34 @@
 import contextlib
 import logging
-import os
 from typing import List, Optional, Union
 
 import pygame
 from pygame import Surface
 
-from upgrades_and_abilities.base_abilities import BaseAbility
 from config import LVL_UP, WIDTH, GREEN, HEIGHT
-from image_provider import ImageProvider
 from units.base_units import BaseUnit
+from units.image_stores import ImageStore, BaseImageStore, EmptyStoreException
+from upgrades_and_abilities.base_abilities import BaseAbility
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)
 
 
-class ImageStore:
-    def __init__(self, path: str) -> None:
-        self.images = [f'{path}/{i}' for i in os.listdir(path)]
-        self.ind = float(len(self.images))
-        self._is_left = False
+class PlayerImageStore(BaseImageStore):
 
-    def next_frame(self) -> None:
-        self.ind += 0.5
-
-    def reload(self, is_left: bool) -> None:
-        self.ind = 0
-        self._is_left = is_left
-
-    def get_image(self) -> Optional[Surface]:
-        with contextlib.suppress(IndexError):
-            return pygame.transform.flip(ImageProvider.get_image_by_path(self.images[int(self.ind)]), self._is_left,
-                                         False)
-        return None
-
-
-class BaseImageStore:
-    def __init__(self, path: str) -> None:
-        self.img_path = path
-        self._is_left = False
-        pass
-
-    def next_frame(self) -> None:
-        pass
-
-    def reload(self, is_left: bool) -> None:
-        self._is_left = is_left
-
-    def get_image(self) -> Surface:
-        return pygame.transform.flip(ImageProvider.get_image_by_path(self.img_path), self._is_left, False)
-
-
-class PlayerImageProvider:
-
-    def __init__(self) -> None:
-        self.stores: List[Union[BaseImageStore, ImageStore]] = [ImageStore("resources/units/player/attack"),
-                                                                ImageStore("resources/units/player/run"),
-                                                                BaseImageStore('resources/units/player/base.png')]
+    def __init__(self, path: str, reloaded: bool = True) -> None:
+        self.stores: List[Union[BaseImageStore, ImageStore]] = [ImageStore(path + "attack"),
+                                                                ImageStore(path + "run"),
+                                                                BaseImageStore(path + 'base.png')]
 
     def next_frame(self) -> None:
         for store in self.stores:
             store.next_frame()
 
-    def get_current_image(self) -> Surface:  # type: ignore
+    def get_image(self) -> Surface:  # type: ignore
         for store in self.stores:
-            image = store.get_image()
-            if image is not None:
-                return image
+            with contextlib.suppress(EmptyStoreException):
+                return store.get_image()
 
     def change_direction(self, is_left: bool) -> None:
         self.stores[1].reload(is_left)
@@ -76,16 +38,15 @@ class PlayerImageProvider:
 
 
 class Player(BaseUnit):
-    image_path = "resources/units/player/attack/attack_01.png"
+    image_path = "resources/units/player/"
     max_hp = 100
     base_hp_regen = 0.5
     damage = 30
     attack_speed = 1
+    image_store_type = PlayerImageStore
 
-    def __init__(self, unit_layer, image_provider: PlayerImageProvider, screen: Surface, initial_x: int = 0,
-                 initial_y: int = 0) -> None:
+    def __init__(self, unit_layer, screen: Surface, initial_x: int = 0, initial_y: int = 0) -> None:
         super().__init__(unit_layer, screen, initial_x, initial_y)
-        self.image_provider = image_provider
         self.level = 1
         self.exp = 0
 
@@ -95,7 +56,7 @@ class Player(BaseUnit):
         mob = self.unit_layer.get_nearest_mob(*self.rect.center)
         if mob is not None and mob.dist_from(*self.rect.center) < 130:
             mob.got_attack(self.damage)
-            self.image_provider.attack((mob.rect.centerx - self.rect.centerx) < 0)
+            self.image_store.attack((mob.rect.centerx - self.rect.centerx) < 0)
 
     def add_exp(self, exp: int) -> None:
         self.exp += exp
@@ -112,9 +73,8 @@ class Player(BaseUnit):
         line_len = self.exp / self._calc_exp_for_lvl() * WIDTH
         pygame.draw.line(self.screen, GREEN, (0, HEIGHT - 5), (line_len, HEIGHT - 5), 5)
 
-    def draw(self) -> None:
-        self.image = self.image_provider.get_current_image()
-        super().draw()
+    def draw_interface(self) -> None:
+        super().draw_interface()
         self.draw_exp_line()
         self.draw_abilities()
 
@@ -126,7 +86,7 @@ class Player(BaseUnit):
         super().move(diff_x, diff_y)
         logger.debug(f"move {diff_x} {diff_y}")
         if diff_x != 0 and not screen:
-            self.image_provider.change_direction(diff_x < 0)
+            self.image_store.change_direction(diff_x < 0)  # type: ignore
 
     def process_next_frame(self) -> None:
         super().process_next_frame()

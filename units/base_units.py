@@ -1,13 +1,13 @@
 import contextlib
 import logging
 import math
-from typing import final, Optional, Union
+from typing import final, Optional, Union, Type
 
-from pygame import Surface
+from pygame import Surface, Rect
 from pygame.sprite import Sprite
 
 from config import FONT, RED, FPS
-from image_provider import ImageProvider
+from units.image_stores import BaseImageStore
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)
@@ -15,19 +15,21 @@ logger.setLevel(logging.DEBUG)
 
 class BaseDrawable(Sprite):
     image_path: str
+    image_store_type: Type[BaseImageStore] = BaseImageStore
+    reloaded_store = True
+    height = 50
+    width = 50
 
     def __init__(self, unit_layer, screen: Surface, initial_x: int = 0, initial_y: int = 0) -> None:
         super(BaseDrawable, self).__init__()
-        self.image = ImageProvider.get_image_by_path(self.image_path)
+        self.image_store = self.image_store_type(self.image_path, self.reloaded_store)
         self.screen = screen
-        self.rect = self.image.get_rect()
-        self.rect.width //= 2
-        self.rect.height //= 2
+        self.rect = Rect(initial_x, initial_y, self.width, self.height)
         self.rect.center = (initial_x, initial_y)
         self.unit_layer = unit_layer
 
     def draw(self) -> None:
-        self.screen.blit(self.image, self.rect)
+        self.screen.blit(self.image_store.get_image(), self.rect)
 
     def move(self, diff_x: int, diff_y: int, screen: bool = False) -> None:
         self.rect.x += diff_x
@@ -39,6 +41,12 @@ class BaseDrawable(Sprite):
 
     def dist_from(self, x: int, y: int) -> float:
         return math.sqrt((self.rect.x - x) * (self.rect.x - x) + (self.rect.y - y) * (self.rect.y - y))
+    
+    def process_next_frame(self):
+        self.image_store.next_frame()
+
+    def draw_interface(self) -> None:
+        pass
 
 
 class BaseUnit(BaseDrawable):
@@ -91,6 +99,7 @@ class BaseUnit(BaseDrawable):
         self.kill()
 
     def process_next_frame(self) -> None:
+        super().process_next_frame()
         if self.max_hp and self.hp and self.hp_regen:
             self.hp += self.hp_regen / FPS
             if self.hp > self.max_hp:

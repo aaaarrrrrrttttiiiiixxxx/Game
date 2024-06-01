@@ -5,33 +5,33 @@ from pygame import Surface
 from pygame.sprite import Group, spritecollide
 
 from config import CAMERA_MOVE, WIDTH, HEIGHT
-from units.base_units import BaseUnit
+from units.base_units import BaseUnit, BaseDrawable
 from units.enemies import Goblin, GoblinArcher, BaseEnemy
-from units.player import Player, PlayerImageProvider
+from units.player import Player, PlayerImageStore
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)
 
 
 class UnitLayer:
-    def __init__(self, screen: Surface, image_provider: PlayerImageProvider) -> None:
+    def __init__(self, screen: Surface) -> None:
         super().__init__()
         self.units = Group()  # type: Group
         self.non_collide = Group()  # type: Group
         self.all_sprites = Group()  # type: Group
         self.screen = screen
-        self.player = self._create_player(image_provider)
+        self.player = self._create_player()
 
     def add(self, sprite: BaseUnit) -> None:
         self.units.add(sprite)
         self.all_sprites.add(sprite)
 
-    def add_non_collide(self, sprite: BaseUnit) -> None:
+    def add_non_collide(self, sprite: BaseDrawable) -> None:
         self.non_collide.add(sprite)
         self.all_sprites.add(sprite)
 
-    def _create_player(self, image_provider: PlayerImageProvider) -> Player:
-        self.player = Player(self, image_provider, self.screen, int(WIDTH / 2), int(WIDTH / 2))
+    def _create_player(self) -> Player:
+        self.player = Player(self, self.screen, int(WIDTH / 2), int(WIDTH / 2))
         self.units.add(self.player)
         self.all_sprites.add(self.player)
         return self.player
@@ -55,6 +55,10 @@ class UnitLayer:
             unit.draw()
         for unit in self.non_collide:
             unit.draw()
+        for unit in self.units:
+            unit.draw_interface()
+        for unit in self.non_collide:
+            unit.draw_interface()
 
     def process_next_frame(self) -> None:
         for unit in self.units:

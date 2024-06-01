@@ -4,7 +4,6 @@ import pygame
 from pygame import Surface
 
 from config import FPS
-from image_provider import ImageProvider
 from units.base_units import MovingToTargetUnit
 
 
@@ -18,7 +17,6 @@ class BaseMissile(MovingToTargetUnit):
     def _on_reach_target(self) -> None:
         if self.target is not None:
             self.rect.center = self.target.rect.center
-            self.image = ImageProvider.get_image_by_path("resources/units/explosion.png")
             super().draw()
             self.kill()
             self.target.got_attack(self.damage)
@@ -29,7 +27,7 @@ class BaseMissile(MovingToTargetUnit):
             direction_y = self.target.rect.centery - self.rect.centery
             angle = math.degrees(math.atan2(direction_x, direction_y)) - 90
 
-            rotated_image = pygame.transform.rotate(self.image, angle)
+            rotated_image = pygame.transform.rotate(self.image_store.get_image(), angle)
             rect_for_draw = rotated_image.get_rect()
             rect_for_draw.center = self.rect.center
             self.screen.blit(rotated_image, rect_for_draw)

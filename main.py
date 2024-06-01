@@ -1,12 +1,11 @@
 import contextlib
 from random import shuffle
 
-from units.player import PlayerImageProvider
-from upgrades_and_abilities.upgrades import *
 from ability_choose_screen import AbilityChooseScreen
 from config import *
 from unit_generator import UnitGenerator
 from unit_layer import UnitLayer
+from upgrades_and_abilities.upgrades import *
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)
@@ -16,8 +15,7 @@ screen = pygame.display.set_mode((WIDTH, HEIGHT))
 pygame.display.set_caption("My Game")
 clock = pygame.time.Clock()
 
-player_image_provider = PlayerImageProvider()
-unit_layer = UnitLayer(screen, player_image_provider)
+unit_layer = UnitLayer(screen)
 
 goblin = unit_layer.create_goblin(100, 350)
 unit_layer.create_goblin_archer(230, 270)
@@ -31,7 +29,6 @@ upgrade_factory = UpgradeFactory(unit_layer.player)
 
 while running:
     clock.tick(FPS)
-    player_image_provider.next_frame()
     screen.fill(BLUE)
 
     for event in pygame.event.get():
