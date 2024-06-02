@@ -61,6 +61,18 @@ class DamageUpgrade(BaseUpgrade):
         player.damage += 5
 
 
+class Upgrader:
+    def __init__(self, ability_type: Type[BaseAbility]) -> None:
+        self.ability_type = ability_type
+
+    def __call__(self, player) -> None:
+        try:
+            pos_x = player.abilities[-1].rect.right
+        except IndexError:
+            pos_x = 0
+        player.abilities.append(self.ability_type(player.screen, pos_x + 5, 5))
+
+
 class UpgradeFactory:
 
     def __init__(self, player) -> None:
@@ -90,12 +102,4 @@ class UpgradeFactory:
             ability_upgrade_class = type(f"{ability_class.name}Upgrade", (BaseUpgrade,), dict())
             setattr(ability_upgrade_class, 'text', ability_class.name)
             setattr(ability_upgrade_class, 'image', ability_class.icon_image)
-
-            def upgrade(self, player) -> None:
-                try:
-                    pos_x = player.abilities[-1].rect.right
-                except IndexError:
-                    pos_x = 0
-                player.abilities.append(ability_class(player.screen, pos_x + 5, 5))
-
-            setattr(ability_upgrade_class, 'upgrade', upgrade)
+            setattr(ability_upgrade_class, 'upgrade', Upgrader(ability_class))

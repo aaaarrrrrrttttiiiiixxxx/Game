@@ -29,7 +29,9 @@ upgrade_factory = UpgradeFactory(unit_layer.player)
 
 while running:
     clock.tick(FPS)
-    screen.fill(BLUE)
+
+    if not pause:
+        unit_layer.process_next_frame()
 
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
@@ -63,7 +65,6 @@ while running:
 
         unit_layer.player.attack()
         unit_generator.step()
-        unit_layer.process_next_frame()
 
     unit_layer.draw()
     if menu is not None:

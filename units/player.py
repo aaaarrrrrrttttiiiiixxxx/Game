@@ -31,7 +31,8 @@ class PlayerImageStore(BaseImageStore):
                 return store.get_image()
 
     def change_direction(self, is_left: bool) -> None:
-        self.stores[1].reload(is_left)
+        if self.stores[1].is_end() or is_left != self.stores[1].is_left:
+            self.stores[1].reload(is_left)
 
     def attack(self, is_left: bool) -> None:
         self.stores[0].reload(is_left)
@@ -82,10 +83,10 @@ class Player(BaseUnit):
         for ability in self.abilities:
             ability.draw()
 
-    def move(self, diff_x: int, diff_y: int, screen: bool = False) -> None:
+    def move(self, diff_x: Union[int, float], diff_y: Union[int, float], screen: bool = False) -> None:
         super().move(diff_x, diff_y)
         logger.debug(f"move {diff_x} {diff_y}")
-        if diff_x != 0 and not screen:
+        if (diff_x != 0 or diff_y != 0) and not screen:
             self.image_store.change_direction(diff_x < 0)  # type: ignore
 
     def process_next_frame(self) -> None:

@@ -18,7 +18,7 @@ class BaseImageStore:
             self.images = [path]
         self.ind = 0 if reloaded else float(len(self.images))
 
-        self._is_left = False
+        self.is_left = False
 
     def next_frame(self) -> None:
         pass
@@ -28,15 +28,18 @@ class BaseImageStore:
 
     def reload(self, is_left: bool) -> None:
         self.ind = 0
-        self._is_left = is_left
+        self.is_left = is_left
 
     def get_image(self) -> Surface:
-        return pygame.transform.flip(ImageProvider.get_image_by_path(self.get_image_path()), self._is_left, False)
+        return pygame.transform.flip(ImageProvider.get_image_by_path(self.get_image_path()), self.is_left, False)
 
     def get_image_path(self) -> str:
-        if self.ind >= len(self.images):
+        if self.is_end():
             self.on_animation_end()
         return self.images[int(self.ind)]
+
+    def is_end(self) -> bool:
+        return self.ind >= len(self.images)
 
     def on_animation_end(self):
         self.ind = 0
