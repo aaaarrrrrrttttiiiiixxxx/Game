@@ -1,11 +1,17 @@
 import pygame
 from pygame import Surface
 
-from config import HIT_NEAREST
+from config import HIT_NEAREST, FPS
 from image_provider import ImageProvider
-from units.missiles import Fireball
+from units.missiles import BaseMissile
 from upgrades_and_abilities.base_abilities import BaseAbility
 from upgrades_and_abilities.upgrades import BaseAbilityUpgrade
+
+
+class Fireball(BaseMissile):
+    image_path = "resources/units/fireball.png"
+    move_speed = 120 / FPS
+    rotate = True
 
 
 class FireballAbility(BaseAbility):
@@ -19,7 +25,6 @@ class FireballAbility(BaseAbility):
         self.damage = 35
 
     def _use(self, player) -> None:
-        print(1)
         find_target_pos = player.rect.center if HIT_NEAREST else pygame.mouse.get_pos()
         mob = player.unit_layer.get_nearest_mob(*find_target_pos)
         if mob is not None:

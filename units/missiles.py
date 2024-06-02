@@ -40,12 +40,6 @@ class BaseMissile(MovingToTargetUnit):
         self.make_movement_step()
 
 
-class Fireball(BaseMissile):
-    image_path = "resources/units/fireball.png"
-    move_speed = 120 / FPS
-    rotate = True
-
-
 class Arrow(BaseMissile):
     image_path = "resources/units/arrow.png"
     move_speed = 240 / FPS

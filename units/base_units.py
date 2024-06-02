@@ -31,9 +31,9 @@ class BaseDrawable(Sprite):
     def draw(self) -> None:
         self.screen.blit(self.image_store.get_image(), self.rect)
 
-    def move(self, diff_x: int, diff_y: int, screen: bool = False) -> None:
-        self.rect.x += diff_x
-        self.rect.y += diff_y
+    def move(self, diff_x: Union[int, float], diff_y: Union[int, float], screen: bool = False) -> None:
+        self.rect.x += diff_x  # type: ignore
+        self.rect.y += diff_y  # type: ignore
 
     def move_to(self, res_x: int, res_y: int) -> None:
         self.rect.x = res_x
@@ -41,7 +41,7 @@ class BaseDrawable(Sprite):
 
     def dist_from(self, x: int, y: int) -> float:
         return math.sqrt((self.rect.x - x) * (self.rect.x - x) + (self.rect.y - y) * (self.rect.y - y))
-    
+
     def process_next_frame(self):
         self.image_store.next_frame()
 
@@ -146,6 +146,3 @@ class MovingToTargetUnit(BaseUnit):
                 self.unit_layer.move(self, diff_x, 0)
             else:
                 self.move(int(diff_x), int(diff_y))
-
-    def move(self, diff_x: int, diff_y: int, screen: bool = False) -> None:
-        self.rect.center = (self.rect.centerx + diff_x, self.rect.centery + diff_y)
