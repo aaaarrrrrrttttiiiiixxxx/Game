@@ -22,7 +22,7 @@ class UnitGenerator:
     def _step(self) -> None:
         for enemy_type in self._get_all_enemy_types():
             if random.choices([True, False], weights=[enemy_type.get_spawn_rate(), ENEMY_SPAWN_RATE])[0]:
-                enemy = enemy_type(self.unit_layer, self.unit_layer.screen, *self.get_random_position())
+                enemy = enemy_type(self.unit_layer.camera, self.unit_layer, self.unit_layer.screen, *self.get_random_position())
                 self.unit_layer.add_enemy(enemy)
 
     @staticmethod

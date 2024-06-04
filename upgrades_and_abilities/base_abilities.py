@@ -3,6 +3,7 @@ from typing import final
 import pygame
 from pygame import Rect, Surface
 
+from camera import Camera
 from config import FPS, HEIGHT
 
 
@@ -12,9 +13,10 @@ class BaseAbility:
     base_mana_cost: int
     name: str
 
-    def __init__(self, screen: Surface, pos_x: int, pos_y: int) -> None:
+    def __init__(self, camera: Camera, screen: Surface, pos_x: int, pos_y: int) -> None:
         self.rect = Rect(pos_x, pos_y, HEIGHT * 0.1, HEIGHT * 0.1)
         self.screen = screen
+        self.camera = camera
 
         self.cooldown = self.base_cooldown
         self.mana_cost = self.base_mana_cost

@@ -3,6 +3,7 @@ from typing import Optional, Tuple, Union
 
 from pygame import Surface
 
+from camera import Camera
 from units.base_units import BaseDrawable
 from units.image_stores import InfinityImageStore
 
@@ -12,8 +13,8 @@ class MovingToPointUnit(BaseDrawable):
     image_store_type = InfinityImageStore
     move_speed: Union[int, float]
 
-    def __init__(self, unit_layer, screen: Surface, initial_x: int = 0, initial_y: int = 0) -> None:
-        super().__init__(unit_layer, screen, initial_x, initial_y)
+    def __init__(self, camera: Camera, unit_layer, screen: Surface, initial_x: int = 0, initial_y: int = 0) -> None:
+        super().__init__(camera, unit_layer, screen, initial_x, initial_y)
         self.target: Optional[Tuple[Union[int, float], Union[int, float]]] = None
 
     def set_target(self, x: int, y: int) -> None:

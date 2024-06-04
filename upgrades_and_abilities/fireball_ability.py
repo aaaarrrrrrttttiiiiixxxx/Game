@@ -1,6 +1,7 @@
 import pygame
 from pygame import Surface
 
+from camera import Camera
 from config import HIT_NEAREST, FPS
 from image_provider import ImageProvider
 from units.missiles import BaseMissile
@@ -20,15 +21,15 @@ class FireballAbility(BaseAbility):
     base_cooldown = 3.0
     base_mana_cost = 10
 
-    def __init__(self, screen: Surface, pos_x: int, pos_y: int) -> None:
-        super().__init__(screen, pos_x, pos_y)
+    def __init__(self, camera: Camera, screen: Surface, pos_x: int, pos_y: int) -> None:
+        super().__init__(camera, screen, pos_x, pos_y)
         self.damage = 35
 
     def _use(self, player) -> None:
-        find_target_pos = player.rect.center if HIT_NEAREST else pygame.mouse.get_pos()
+        find_target_pos = player.rect.center if HIT_NEAREST else self.camera.get_mouse()
         mob = player.unit_layer.get_nearest_mob(*find_target_pos)
         if mob is not None:
-            fireball = Fireball(player.unit_layer, player.screen, player.rect.centerx, player.rect.centery, self.damage)
+            fireball = Fireball(self.camera, player.unit_layer, player.screen, player.rect.centerx, player.rect.centery, self.damage)
             fireball.set_target(mob)
             player.unit_layer.add_non_collide(fireball)
 

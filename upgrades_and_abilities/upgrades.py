@@ -70,7 +70,7 @@ class Upgrader:
             pos_x = player.abilities[-1].rect.right
         except IndexError:
             pos_x = 0
-        player.abilities.append(self.ability_type(player.screen, pos_x + 5, 5))
+        player.abilities.append(self.ability_type(player.camera, player.screen, pos_x + 5, 5))
 
 
 class UpgradeFactory:

@@ -4,6 +4,7 @@ import pygame
 from pygame import Surface
 from pygame.sprite import Group, spritecollide
 
+from camera import Camera
 from image_provider import ImageProvider
 from units.moving_to_point import MovingToPointUnit
 from upgrades_and_abilities.base_abilities import BaseAbility
@@ -14,8 +15,8 @@ class FireRoller(MovingToPointUnit):
     image_path = 'resources/units/roller'
     move_speed = 5
 
-    def __init__(self, unit_layer, screen: Surface, initial_x: int = 0, initial_y: int = 0, damage: int = 0) -> None:
-        super().__init__(unit_layer, screen, initial_x, initial_y)
+    def __init__(self, camera: Camera, unit_layer, screen: Surface, initial_x: int = 0, initial_y: int = 0, damage: int = 0) -> None:
+        super().__init__(camera, unit_layer, screen, initial_x, initial_y)
         self.damaged_units = Group()  # type: Group
         self.damage = damage
 
@@ -41,13 +42,14 @@ class FireRollerAbility(BaseAbility):
     base_cooldown = 3.0
     base_mana_cost = 10
 
-    def __init__(self, screen: Surface, pos_x: int, pos_y: int) -> None:
-        super().__init__(screen, pos_x, pos_y)
+    def __init__(self, camera: Camera, screen: Surface, pos_x: int, pos_y: int) -> None:
+        super().__init__(camera, screen, pos_x, pos_y)
         self.damage = 15
 
     def _use(self, player) -> None:
-        find_target_pos = pygame.mouse.get_pos()
-        fireball = FireRoller(player.unit_layer, player.screen, player.rect.centerx, player.rect.centery, self.damage)
+        find_target_pos = self.camera.get_mouse()
+        fireball = FireRoller(self.camera, player.unit_layer, player.screen, player.rect.centerx, player.rect.centery,
+                              self.damage)
         fireball.set_target(*find_target_pos)
         player.unit_layer.add_non_collide(fireball)
 

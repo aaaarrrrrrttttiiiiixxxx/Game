@@ -4,6 +4,7 @@ from typing import Optional
 from pygame import Surface
 from pygame.sprite import Group, spritecollide
 
+from camera import Camera
 from config import CAMERA_MOVE, WIDTH, HEIGHT
 from units.base_units import BaseUnit, BaseDrawable
 from units.enemies import Goblin, GoblinArcher, BaseEnemy
@@ -14,8 +15,8 @@ logger.setLevel(logging.DEBUG)
 
 
 class UnitLayer:
-    def __init__(self, screen: Surface) -> None:
-        super().__init__()
+    def __init__(self, camera: Camera, screen: Surface) -> None:
+        self.camera = camera
         self.units = Group()  # type: Group
         self.non_collide = Group()  # type: Group
         self.all_sprites = Group()  # type: Group
@@ -31,18 +32,18 @@ class UnitLayer:
         self.all_sprites.add(sprite)
 
     def _create_player(self) -> Player:
-        self.player = Player(self, self.screen, int(WIDTH / 2), int(WIDTH / 2))
+        self.player = Player(self.camera, self, self.screen, int(WIDTH / 2), int(WIDTH / 2))
         self.units.add(self.player)
         self.all_sprites.add(self.player)
         return self.player
 
     def create_goblin(self, initial_x: int = 0, initial_y: int = 0) -> Goblin:
-        goblin = Goblin(self, self.screen, initial_x, initial_y)
+        goblin = Goblin(self.camera, self, self.screen, initial_x, initial_y)
         self.add_enemy(goblin)
         return goblin
 
     def create_goblin_archer(self, initial_x: int = 0, initial_y: int = 0) -> GoblinArcher:
-        goblin = GoblinArcher(self, self.screen, initial_x, initial_y)
+        goblin = GoblinArcher(self.camera, self, self.screen, initial_x, initial_y)
         self.add_enemy(goblin)
         return goblin
 
@@ -91,11 +92,12 @@ class UnitLayer:
     def move_player(self, diff_x: int, diff_y: int) -> None:
         self.move(self.player, diff_x, diff_y)
         if (CAMERA_MOVE is None or
-                self.player.rect.left < WIDTH * CAMERA_MOVE or
-                self.player.rect.right > WIDTH * (1 - CAMERA_MOVE) or
-                self.player.rect.top < HEIGHT * CAMERA_MOVE or
-                self.player.rect.bottom > HEIGHT * (1 - CAMERA_MOVE)):
-            self.all_sprites.update('move', diff_x=-diff_x, diff_y=-diff_y, screen=True)
+                self.player.rect.left - self.camera.x < WIDTH * CAMERA_MOVE or
+                self.player.rect.right - self.camera.x > WIDTH * (1 - CAMERA_MOVE) or
+                self.player.rect.top - self.camera.y < HEIGHT * CAMERA_MOVE or
+                self.player.rect.bottom - self.camera.y > HEIGHT * (1 - CAMERA_MOVE)):
+            self.camera.x += diff_x
+            self.camera.y += diff_y
 
     def get_nearest_mob(self, x: int, y: int) -> Optional[BaseUnit]:
         if len(self.units) <= 1:

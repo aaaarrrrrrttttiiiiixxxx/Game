@@ -3,6 +3,7 @@ import math
 import pygame
 from pygame import Surface
 
+from camera import Camera
 from config import FPS
 from units.base_units import MovingToTargetUnit
 
@@ -10,8 +11,8 @@ from units.base_units import MovingToTargetUnit
 class BaseMissile(MovingToTargetUnit):
     rotate = False
 
-    def __init__(self, unit_layer, screen: Surface, initial_x: int = 0, initial_y: int = 0, damage: int = 0) -> None:
-        super().__init__(unit_layer, screen, initial_x, initial_y)
+    def __init__(self, camera: Camera, unit_layer, screen: Surface, initial_x: int = 0, initial_y: int = 0, damage: int = 0) -> None:
+        super().__init__(camera, unit_layer, screen, initial_x, initial_y)
         self.damage = damage
 
     def _on_reach_target(self) -> None:
@@ -30,7 +31,7 @@ class BaseMissile(MovingToTargetUnit):
             rotated_image = pygame.transform.rotate(self.image_store.get_image(), angle)
             rect_for_draw = rotated_image.get_rect()
             rect_for_draw.center = self.rect.center
-            self.screen.blit(rotated_image, rect_for_draw)
+            self.screen.blit(rotated_image, self.camera.map(*rect_for_draw.topleft))
             self.draw_text()
         else:
             super().draw()

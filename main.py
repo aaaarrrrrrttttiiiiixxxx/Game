@@ -2,6 +2,7 @@ import contextlib
 from random import shuffle
 
 from ability_choose_screen import AbilityChooseScreen
+from camera import Camera
 from config import *
 from unit_generator import UnitGenerator
 from unit_layer import UnitLayer
@@ -15,7 +16,8 @@ screen = pygame.display.set_mode((WIDTH, HEIGHT))
 pygame.display.set_caption("My Game")
 clock = pygame.time.Clock()
 
-unit_layer = UnitLayer(screen)
+camera = Camera()
+unit_layer = UnitLayer(camera, screen)
 
 goblin = unit_layer.create_goblin(100, 350)
 unit_layer.create_goblin_archer(230, 270)
@@ -29,6 +31,7 @@ upgrade_factory = UpgradeFactory(unit_layer.player)
 
 while running:
     clock.tick(FPS)
+    screen.fill(BLUE)
 
     if not pause:
         unit_layer.process_next_frame()

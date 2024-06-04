@@ -5,6 +5,7 @@ from typing import List, Optional, Union
 import pygame
 from pygame import Surface
 
+from camera import Camera
 from config import LVL_UP, WIDTH, GREEN, HEIGHT
 from units.base_units import BaseUnit
 from units.image_stores import ImageStore, BaseImageStore, EmptyStoreException
@@ -46,8 +47,8 @@ class Player(BaseUnit):
     attack_speed = 1
     image_store_type = PlayerImageStore
 
-    def __init__(self, unit_layer, screen: Surface, initial_x: int = 0, initial_y: int = 0) -> None:
-        super().__init__(unit_layer, screen, initial_x, initial_y)
+    def __init__(self, camera: Camera, unit_layer, screen: Surface, initial_x: int = 0, initial_y: int = 0) -> None:
+        super().__init__(camera, unit_layer, screen, initial_x, initial_y)
         self.level = 1
         self.exp = 0
 

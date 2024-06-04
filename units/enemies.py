@@ -4,6 +4,7 @@ from typing import Union, Optional
 import pygame
 from pygame import Surface
 
+from camera import Camera
 from config import FPS
 from units.base_units import MovingToTargetUnit
 from units.missiles import Arrow
@@ -18,11 +19,11 @@ class BaseEnemy(MovingToTargetUnit):
     lvl1_spawn_rate: int = 0
     lvl1_exp: int = 0
 
-    def __init__(self, unit_layer, screen: Surface, initial_x: int = 0, initial_y: int = 0) -> None:
+    def __init__(self, camera: Camera, unit_layer, screen: Surface, initial_x: int = 0, initial_y: int = 0) -> None:
         self.max_hp: int = type(self).initial_max_hp()
         self.damage = type(self).initial_damage()
         self.exp = type(self).initial_exp()
-        super().__init__(unit_layer, screen, initial_x, initial_y)
+        super().__init__(camera, unit_layer, screen, initial_x, initial_y)
 
     def reach_target(self, distance_x: int, distance_y: int) -> bool:
         attack_range = self.attack_range or self.radius + self.unit_layer.player.radius  # calc melee attack range
@@ -91,6 +92,6 @@ class GoblinArcher(BaseEnemy):
     lvl1_exp = 65
 
     def _attack(self) -> None:
-        arrow = Arrow(self.unit_layer, self.screen, self.rect.centerx, self.rect.centery, 1)
+        arrow = Arrow(self.camera, self.unit_layer, self.screen, self.rect.centerx, self.rect.centery, 1)
         arrow.set_target(self.unit_layer.player)
         self.unit_layer.add_non_collide(arrow)

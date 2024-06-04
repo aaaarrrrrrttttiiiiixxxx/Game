@@ -6,6 +6,7 @@ from typing import final, Optional, Union, Type
 from pygame import Surface, Rect
 from pygame.sprite import Sprite
 
+from camera import Camera
 from config import FONT, RED, FPS
 from units.image_stores import BaseImageStore
 
@@ -20,16 +21,17 @@ class BaseDrawable(Sprite):
     height = 50
     width = 50
 
-    def __init__(self, unit_layer, screen: Surface, initial_x: int = 0, initial_y: int = 0) -> None:
+    def __init__(self, camera: Camera, unit_layer, screen: Surface, initial_x: int = 0, initial_y: int = 0) -> None:
         super(BaseDrawable, self).__init__()
         self.image_store = self.image_store_type(self.image_path, self.reloaded_store)
         self.screen = screen
+        self.camera = camera
         self.rect = Rect(initial_x, initial_y, self.width, self.height)
         self.rect.center = (initial_x, initial_y)
         self.unit_layer = unit_layer
 
     def draw(self) -> None:
-        self.screen.blit(self.image_store.get_image(), self.rect)
+        self.screen.blit(self.image_store.get_image(), self.camera.map(*self.rect.topleft))
 
     def move(self, diff_x: Union[int, float], diff_y: Union[int, float], screen: bool = False) -> None:
         self.rect.x += diff_x  # type: ignore
@@ -54,8 +56,8 @@ class BaseUnit(BaseDrawable):
     base_hp_regen = 0.0
     attack_speed: Optional[Union[int, float]] = None
 
-    def __init__(self, unit_layer, screen: Surface, initial_x: int = 0, initial_y: int = 0) -> None:
-        super().__init__(unit_layer, screen, initial_x, initial_y)
+    def __init__(self, camera: Camera, unit_layer, screen: Surface, initial_x: int = 0, initial_y: int = 0) -> None:
+        super().__init__(camera, unit_layer, screen, initial_x, initial_y)
         if self.max_hp is not None:
             self.hp = float(self.max_hp)
             self.hp_regen = self.base_hp_regen
@@ -88,7 +90,7 @@ class BaseUnit(BaseDrawable):
             img2 = FONT.render(f'{int(self.hp)} / {self.max_hp}', True, RED)
             x, y = self.rect.topleft
             y -= 10
-            self.screen.blit(img2, (x, y))
+            self.screen.blit(img2, self.camera.map(x, y))
 
     def got_attack(self, incoming_damage: int) -> None:
         self.hp -= incoming_damage
@@ -111,8 +113,8 @@ class BaseUnit(BaseDrawable):
 class MovingToTargetUnit(BaseUnit):
     move_speed: Union[int, float]
 
-    def __init__(self, unit_layer, screen: Surface, initial_x: int = 0, initial_y: int = 0) -> None:
-        super().__init__(unit_layer, screen, initial_x, initial_y)
+    def __init__(self, camera: Camera, unit_layer, screen: Surface, initial_x: int = 0, initial_y: int = 0) -> None:
+        super().__init__(camera, unit_layer, screen, initial_x, initial_y)
         self.target = None  # type: Optional[BaseUnit]
         self.rect.center = initial_x, initial_y
 
