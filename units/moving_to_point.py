@@ -17,7 +17,7 @@ class MovingToPointUnit(BaseDrawable):
         super().__init__(camera, unit_layer, screen, initial_x, initial_y)
         self.target: Optional[Tuple[Union[int, float], Union[int, float]]] = None
 
-    def set_target(self, x: int, y: int) -> None:
+    def set_target(self, x: Union[int | float], y: Union[int, float]) -> None:
         self.target = (x, y)
 
     def _on_reach_target(self) -> None:

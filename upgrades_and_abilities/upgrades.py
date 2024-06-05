@@ -77,6 +77,7 @@ class UpgradeFactory:
 
     def __init__(self, player) -> None:
         self.player = player
+        self._ability_upgrades: List[Type[BaseUpgrade]] = []
         self._init_ability_upgrades()
 
     def get_all_upgrades(self) -> List[BaseUpgrade]:
@@ -103,3 +104,4 @@ class UpgradeFactory:
             setattr(ability_upgrade_class, 'text', ability_class.name)
             setattr(ability_upgrade_class, 'image', ability_class.icon_image)
             setattr(ability_upgrade_class, 'upgrade', Upgrader(ability_class))
+            self._ability_upgrades.append(ability_upgrade_class)
