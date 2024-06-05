@@ -2,6 +2,7 @@ import contextlib
 from random import shuffle
 
 from ability_choose_screen import AbilityChooseScreen
+from background import Background
 from camera import Camera
 from config import *
 from unit_generator import UnitGenerator
@@ -17,6 +18,7 @@ pygame.display.set_caption("My Game")
 clock = pygame.time.Clock()
 
 camera = Camera()
+background = Background(camera, screen)
 unit_layer = UnitLayer(camera, screen)
 
 goblin = unit_layer.create_goblin(100, 350)
@@ -31,7 +33,7 @@ upgrade_factory = UpgradeFactory(unit_layer.player)
 
 while running:
     clock.tick(FPS)
-    screen.fill(BLUE)
+    background.draw()
 
     if not pause:
         unit_layer.process_next_frame()
