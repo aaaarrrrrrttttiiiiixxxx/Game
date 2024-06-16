@@ -1,12 +1,12 @@
 import contextlib
 import logging
-from typing import List, Optional, Union
+from typing import List, Optional, Union, Tuple
 
 import pygame
 from pygame import Surface
 
 from camera import Camera
-from config import LVL_UP, WIDTH, GREEN, HEIGHT, CAMERA_MOVE
+from config import LVL_UP, WIDTH, HEIGHT, CAMERA_MOVE, RED, UPGRADE_FONT, BLUE, YELLOW
 from units.base_units import BaseUnit
 from units.image_stores import ImageStore, BaseImageStore, EmptyStoreException
 from upgrades_and_abilities.base_abilities import BaseAbility
@@ -71,13 +71,29 @@ class Player(BaseUnit):
     def _calc_exp_for_lvl(self) -> int:
         return self.level * 100 + (self.level - 1) ** 2 * 10
 
-    def draw_exp_line(self) -> None:
-        line_len = self.exp / self._calc_exp_for_lvl() * WIDTH
-        pygame.draw.line(self.screen, GREEN, (0, HEIGHT - 5), (line_len, HEIGHT - 5), 5)
+    def draw_bottom_bar(self) -> None:
+        text = UPGRADE_FONT.render(f'{int(self.hp)} / {self.max_hp}', True, RED)
+        self.screen.blit(text, (0, HEIGHT - text.get_rect().height - 15))
+
+        text = UPGRADE_FONT.render(f'LVL {self.level}', True, YELLOW)
+        self.screen.blit(text, (0, HEIGHT - text.get_rect().height))
+
+        self.draw_bottom_line(self.hp, self.max_hp, RED, 0)
+        self.draw_bottom_line(self.exp, self._calc_exp_for_lvl(), YELLOW, 20)
+
+    def draw_bottom_line(self, line_val: Union[int, float], line_max: Union[int, float],
+                         color: Tuple[int, int, int], padding: int) -> None:
+        left_pad = 120
+        height = 20
+
+        line_len = line_val / line_max * (WIDTH - left_pad)
+        if line_len:
+            y = HEIGHT - 1.5 * height + padding
+            pygame.draw.line(self.screen, color, (left_pad, y), (left_pad + line_len, y), height)
 
     def draw_interface(self) -> None:
         super().draw_interface()
-        self.draw_exp_line()
+        self.draw_bottom_bar()
         self.draw_abilities()
 
     def draw_abilities(self) -> None:
