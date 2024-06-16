@@ -6,7 +6,7 @@ import pygame
 from pygame import Surface
 
 from camera import Camera
-from config import LVL_UP, WIDTH, GREEN, HEIGHT
+from config import LVL_UP, WIDTH, GREEN, HEIGHT, CAMERA_MOVE
 from units.base_units import BaseUnit
 from units.image_stores import ImageStore, BaseImageStore, EmptyStoreException
 from upgrades_and_abilities.base_abilities import BaseAbility
@@ -89,6 +89,14 @@ class Player(BaseUnit):
         logger.debug(f"move {diff_x} {diff_y}")
         if (diff_x != 0 or diff_y != 0) and not screen:
             self.image_store.change_direction(diff_x < 0)  # type: ignore
+
+        if (CAMERA_MOVE is None or
+                self.rect.left - self.camera.x < WIDTH * CAMERA_MOVE or
+                self.rect.right - self.camera.x > WIDTH * (1 - CAMERA_MOVE) or
+                self.rect.top - self.camera.y < HEIGHT * CAMERA_MOVE or
+                self.rect.bottom - self.camera.y > HEIGHT * (1 - CAMERA_MOVE)):
+            self.camera.x += int(diff_x)
+            self.camera.y += int(diff_y)
 
     def process_next_frame(self) -> None:
         super().process_next_frame()

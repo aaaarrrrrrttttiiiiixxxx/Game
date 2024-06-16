@@ -6,6 +6,7 @@ from pygame import Surface
 from camera import Camera
 from units.base_units import BaseDrawable
 from units.image_stores import InfinityImageStore
+from utils import calc_diffs
 
 
 class MovingToPointUnit(BaseDrawable):
@@ -31,15 +32,7 @@ class MovingToPointUnit(BaseDrawable):
             if math.sqrt(direction_x ** 2 + direction_y ** 2) < self.move_speed:
                 self._on_reach_target()
                 return
-            if direction_y == 0:
-                move_x = self.move_speed
-                move_y = 0.0
-            else:
-                ratio = abs(direction_x / direction_y)
-                move_y = self.move_speed / math.sqrt(ratio * ratio + 1)
-                move_x = move_y * ratio
-            diff_x = move_x if direction_x > 0 else -move_x
-            diff_y = move_y if direction_y > 0 else -move_y
+            diff_x, diff_y = calc_diffs(direction_x, direction_y, self.move_speed)
             self.move(diff_x, diff_y)
 
     def move(self, diff_x: Union[int, float], diff_y: Union[int, float], screen: bool = False) -> None:

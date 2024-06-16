@@ -9,6 +9,7 @@ from pygame.sprite import Sprite
 from camera import Camera
 from config import FONT, RED, FPS
 from units.image_stores import BaseImageStore
+from utils import calc_movement_step, calc_diffs
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)
@@ -129,20 +130,13 @@ class MovingToTargetUnit(BaseUnit):
 
     def make_movement_step(self, use_collide: bool = False) -> None:
         if self.target:
+            calc_movement_step(*self.target.rect.center, *self.rect.center, self.move_speed)
             direction_x = self.target.rect.centerx - self.rect.centerx
             direction_y = self.target.rect.centery - self.rect.centery
             if self.reach_target(direction_x, direction_y):
                 self._on_reach_target()
                 return
-            if direction_y == 0:
-                move_x = self.move_speed
-                move_y = 0.0
-            else:
-                ratio = abs(direction_x / direction_y)
-                move_y = self.move_speed / math.sqrt(ratio * ratio + 1)
-                move_x = move_y * ratio
-            diff_x = move_x if direction_x > 0 else -move_x
-            diff_y = move_y if direction_y > 0 else -move_y
+            diff_x, diff_y = calc_diffs(direction_x, direction_y, self.move_speed)
             if use_collide:
                 self.unit_layer.move(self, 0, diff_y)
                 self.unit_layer.move(self, diff_x, 0)

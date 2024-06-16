@@ -56,4 +56,4 @@ class FireballCooldownUpgrade(BaseAbilityUpgrade):
     @classmethod
     def is_available(cls, player) -> bool:
         instance = cls._get_ability_instance(player)
-        return instance is not None and instance.cooldown >= 1
+        return instance is not None and instance.cooldown > 1

@@ -31,9 +31,14 @@ menu = None
 
 upgrade_factory = UpgradeFactory(unit_layer.player)
 
+start_lvl = 0
+
 while running:
     clock.tick(FPS)
     background.draw()
+    if start_lvl and not pause:
+        pygame.event.post(pygame.event.Event(LVL_UP))
+        start_lvl -= 1
 
     if not pause:
         unit_layer.process_next_frame()

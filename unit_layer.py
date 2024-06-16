@@ -91,13 +91,6 @@ class UnitLayer:
 
     def move_player(self, diff_x: int, diff_y: int) -> None:
         self.move(self.player, diff_x, diff_y)
-        if (CAMERA_MOVE is None or
-                self.player.rect.left - self.camera.x < WIDTH * CAMERA_MOVE or
-                self.player.rect.right - self.camera.x > WIDTH * (1 - CAMERA_MOVE) or
-                self.player.rect.top - self.camera.y < HEIGHT * CAMERA_MOVE or
-                self.player.rect.bottom - self.camera.y > HEIGHT * (1 - CAMERA_MOVE)):
-            self.camera.x += diff_x
-            self.camera.y += diff_y
 
     def get_nearest_mob(self, x: int, y: int) -> Optional[BaseUnit]:
         if len(self.units) <= 1:
