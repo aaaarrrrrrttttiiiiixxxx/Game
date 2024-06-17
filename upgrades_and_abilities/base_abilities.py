@@ -34,9 +34,10 @@ class BaseAbility:
 
     @final
     def use(self, player) -> None:
-        if self._cooldown_left == 0:
+        if self._cooldown_left == 0 and self.mana_cost < player.mp:
             self._use(player)
             self._cooldown_left = int(self.cooldown * FPS)
+            player.mp -= self.mana_cost
 
     def _use(self, player) -> None:
         pass

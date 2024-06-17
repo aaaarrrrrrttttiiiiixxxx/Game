@@ -6,7 +6,7 @@ import pygame
 from pygame import Surface
 
 from camera import Camera
-from config import LVL_UP, WIDTH, HEIGHT, CAMERA_MOVE, RED, UPGRADE_FONT, BLUE, YELLOW
+from config import LVL_UP, WIDTH, HEIGHT, CAMERA_MOVE, RED, UPGRADE_FONT, BLUE, YELLOW, WHITE, FPS
 from units.base_units import BaseUnit
 from units.image_stores import ImageStore, BaseImageStore, EmptyStoreException
 from upgrades_and_abilities.base_abilities import BaseAbility
@@ -51,6 +51,9 @@ class Player(BaseUnit):
         super().__init__(camera, unit_layer, screen, initial_x, initial_y)
         self.level = 1
         self.exp = 0
+        self.max_mp = 50
+        self.mp_regen = 0.5
+        self.mp = 50.0
 
         self.abilities: List[BaseAbility] = []
 
@@ -72,14 +75,19 @@ class Player(BaseUnit):
         return self.level * 100 + (self.level - 1) ** 2 * 10
 
     def draw_bottom_bar(self) -> None:
+
+        text = UPGRADE_FONT.render(f'LVL {self.level}', True, WHITE)
+        self.screen.blit(text, (0, HEIGHT - text.get_rect().height - 40))
+
+        text = UPGRADE_FONT.render(f'{int(self.mp)} / {self.max_mp}', True, BLUE)
+        self.screen.blit(text, (0, HEIGHT - text.get_rect().height - 20))
+
         text = UPGRADE_FONT.render(f'{int(self.hp)} / {self.max_hp}', True, RED)
-        self.screen.blit(text, (0, HEIGHT - text.get_rect().height - 15))
+        self.screen.blit(text, (0, HEIGHT - text.get_rect().height - 0))
 
-        text = UPGRADE_FONT.render(f'LVL {self.level}', True, YELLOW)
-        self.screen.blit(text, (0, HEIGHT - text.get_rect().height))
-
+        self.draw_bottom_line(self.exp, self._calc_exp_for_lvl(), WHITE, 40)
+        self.draw_bottom_line(self.mp, self.max_mp, BLUE, 20)
         self.draw_bottom_line(self.hp, self.max_hp, RED, 0)
-        self.draw_bottom_line(self.exp, self._calc_exp_for_lvl(), YELLOW, 20)
 
     def draw_bottom_line(self, line_val: Union[int, float], line_max: Union[int, float],
                          color: Tuple[int, int, int], padding: int) -> None:
@@ -88,7 +96,7 @@ class Player(BaseUnit):
 
         line_len = line_val / line_max * (WIDTH - left_pad)
         if line_len:
-            y = HEIGHT - 1.5 * height + padding
+            y = HEIGHT - 0.5 * height - padding
             pygame.draw.line(self.screen, color, (left_pad, y), (left_pad + line_len, y), height)
 
     def draw_interface(self) -> None:
@@ -116,6 +124,11 @@ class Player(BaseUnit):
 
     def process_next_frame(self) -> None:
         super().process_next_frame()
+
+        self.mp += self.mp_regen / FPS
+        if self.mp > self.max_mp:
+            self.mp = self.max_mp
+
         for ability in self.abilities:
             ability.process_next_frame()
 
