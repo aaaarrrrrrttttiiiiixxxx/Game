@@ -1,11 +1,10 @@
-import pygame
 from pygame import Surface
 
 from camera import Camera
 from config import HIT_NEAREST, FPS
 from image_provider import ImageProvider
 from units.missiles import BaseMissile
-from upgrades_and_abilities.base_abilities import BaseAbility
+from upgrades_and_abilities.base_abilities import PlayerAbility
 from upgrades_and_abilities.upgrades import BaseAbilityUpgrade
 
 
@@ -15,7 +14,7 @@ class Fireball(BaseMissile):
     rotate = True
 
 
-class FireballAbility(BaseAbility):
+class FireballAbility(PlayerAbility):
     icon_image = ImageProvider.get_image_by_path('resources/icons/ability_icons/fireball.png')
     name = 'Fireball'
     base_cooldown = 3.0
@@ -25,13 +24,18 @@ class FireballAbility(BaseAbility):
         super().__init__(camera, screen, pos_x, pos_y)
         self.damage = 35
 
-    def _use(self, player) -> None:
-        find_target_pos = player.rect.center if HIT_NEAREST else self.camera.get_mouse()
-        mob = player.unit_layer.get_nearest_mob(*find_target_pos)
+    def _use(self, ability_owner) -> None:
+        find_target_pos = ability_owner.rect.center if HIT_NEAREST else self.camera.get_mouse()
+        mob = ability_owner.unit_layer.get_nearest_mob(*find_target_pos)
         if mob is not None:
-            fireball = Fireball(self.camera, player.unit_layer, player.screen, player.rect.centerx, player.rect.centery, self.damage)
+            fireball = Fireball(self.camera,
+                                ability_owner.unit_layer,
+                                ability_owner.screen,
+                                ability_owner.rect.centerx,
+                                ability_owner.rect.centery,
+                                self.damage)
             fireball.set_target(mob)
-            player.unit_layer.add_non_collide(fireball)
+            ability_owner.unit_layer.add_non_collide(fireball)
 
 
 class FireballDamageUpgrade(BaseAbilityUpgrade):

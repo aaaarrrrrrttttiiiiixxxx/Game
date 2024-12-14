@@ -8,6 +8,7 @@ from camera import Camera
 from config import FPS
 from units.base_units import MovingToTargetUnit
 from units.missiles import Arrow
+from upgrades_and_abilities.enemies_abilities.double_damage_hit_ability import DoubleDamageHitAbility
 
 
 class BaseEnemy(MovingToTargetUnit):
@@ -95,3 +96,25 @@ class GoblinArcher(BaseEnemy):
         arrow = Arrow(self.camera, self.unit_layer, self.screen, self.rect.centerx, self.rect.centery, 1)
         arrow.set_target(self.unit_layer.player)
         self.unit_layer.add_non_collide(arrow)
+
+
+class BigGoblin(BaseEnemy):
+    image_path = "resources/units/dd_goblin.png"
+    move_speed = 60 / FPS
+    attack_range = None
+    attack_speed = 0.5
+    lvl1_damage = 10
+    lvl1_max_hp = 100
+    lvl1_spawn_rate = 5
+    lvl1_exp = 70
+
+    def __init__(self, camera: Camera, unit_layer, screen: Surface, initial_x: int = 0, initial_y: int = 0) -> None:
+        super().__init__(camera, unit_layer, screen, initial_x, initial_y)
+        self.abilities.append(DoubleDamageHitAbility())
+
+    def _on_reach_target(self) -> None:
+        ability = self.ability_by_name(DoubleDamageHitAbility.name)
+        if ability.is_available(self):  # type: ignore
+            ability.use(self)  # type: ignore
+        else:
+            self.attack()

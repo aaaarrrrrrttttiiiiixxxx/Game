@@ -4,7 +4,7 @@ from pygame.sprite import Group, spritecollide
 from camera import Camera
 from image_provider import ImageProvider
 from units.moving_to_point import MovingToPointUnit
-from upgrades_and_abilities.base_abilities import BaseAbility
+from upgrades_and_abilities.base_abilities import PlayerAbility
 from upgrades_and_abilities.upgrades import BaseAbilityUpgrade
 
 
@@ -12,7 +12,8 @@ class FireRoller(MovingToPointUnit):
     image_path = 'resources/units/roller'
     move_speed = 5
 
-    def __init__(self, camera: Camera, unit_layer, screen: Surface, initial_x: int = 0, initial_y: int = 0, damage: int = 0) -> None:
+    def __init__(self, camera: Camera, unit_layer, screen: Surface, initial_x: int = 0, initial_y: int = 0,
+                 damage: int = 0) -> None:
         super().__init__(camera, unit_layer, screen, initial_x, initial_y)
         self.damaged_units = Group()  # type: Group
         self.damage = damage
@@ -33,7 +34,7 @@ class FireRoller(MovingToPointUnit):
         units.add(self.unit_layer.player)
 
 
-class FireRollerAbility(BaseAbility):
+class FireRollerAbility(PlayerAbility):
     icon_image = ImageProvider.get_image_by_path('resources/icons/ability_icons/fire_roller.png')
     name = 'Fire roller'
     base_cooldown = 3.0

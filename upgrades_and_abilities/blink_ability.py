@@ -2,12 +2,12 @@ from pygame import Surface
 
 from camera import Camera
 from image_provider import ImageProvider
-from upgrades_and_abilities.base_abilities import BaseAbility
+from upgrades_and_abilities.base_abilities import PlayerAbility
 from upgrades_and_abilities.upgrades import BaseAbilityUpgrade
 from utils import calc_movement_step
 
 
-class BlinkAbility(BaseAbility):
+class BlinkAbility(PlayerAbility):
     icon_image = ImageProvider.get_image_by_path('resources/icons/ability_icons/blink.png')
     name = 'Blink'
     base_cooldown = 10.0
@@ -17,9 +17,9 @@ class BlinkAbility(BaseAbility):
         super().__init__(camera, screen, pos_x, pos_y)
         self._max_dist = 300
 
-    def _use(self, player) -> None:
+    def _use(self, ability_owner) -> None:
         target_pos = self.camera.get_mouse()
-        player.move(*calc_movement_step(*target_pos, *player.rect.center, self._max_dist))  # type: ignore
+        ability_owner.move(*calc_movement_step(*target_pos, *ability_owner.rect.center, self._max_dist))  # type: ignore
 
 
 class FireRollerCooldownUpgrade(BaseAbilityUpgrade):

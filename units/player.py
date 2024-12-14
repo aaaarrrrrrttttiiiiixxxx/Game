@@ -1,15 +1,15 @@
 import contextlib
 import logging
-from typing import List, Optional, Union, Tuple
+from typing import List, Union, Tuple
 
 import pygame
 from pygame import Surface
 
 from camera import Camera
-from config import LVL_UP, WIDTH, HEIGHT, CAMERA_MOVE, RED, UPGRADE_FONT, BLUE, YELLOW, WHITE, FPS
+from config import LVL_UP, WIDTH, HEIGHT, CAMERA_MOVE, RED, UPGRADE_FONT, BLUE, WHITE, FPS
 from units.base_units import BaseUnit
 from units.image_stores import ImageStore, BaseImageStore, EmptyStoreException
-from upgrades_and_abilities.base_abilities import BaseAbility
+from upgrades_and_abilities.base_abilities import PlayerAbility
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)
@@ -55,7 +55,7 @@ class Player(BaseUnit):
         self.mp_regen = 0.5
         self.mp = 50.0
 
-        self.abilities: List[BaseAbility] = []
+        self.abilities: List[PlayerAbility] = []  # type: ignore
 
     def _attack(self) -> None:  # melee
         mob = self.unit_layer.get_nearest_mob(*self.rect.center)
@@ -134,13 +134,3 @@ class Player(BaseUnit):
 
     def use_ability(self, ind: int) -> None:
         self.abilities[ind].use(self)
-
-    @property
-    def ability_names(self) -> List[str]:
-        return [a.name for a in self.abilities]
-
-    def ability_by_name(self, name: str) -> Optional[BaseAbility]:
-        for ability in self.abilities:
-            if ability.name == name:
-                return ability
-        return None

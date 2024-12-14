@@ -1,7 +1,7 @@
 import contextlib
 import logging
 import math
-from typing import final, Optional, Union, Type
+from typing import final, Optional, Union, Type, List
 
 from pygame import Surface, Rect
 from pygame.sprite import Sprite
@@ -9,6 +9,7 @@ from pygame.sprite import Sprite
 from camera import Camera
 from config import FONT, RED, FPS
 from units.image_stores import BaseImageStore
+from upgrades_and_abilities.base_abilities import BaseAbility
 from utils import calc_movement_step, calc_diffs
 
 logger = logging.getLogger(__name__)
@@ -59,11 +60,13 @@ class BaseUnit(BaseDrawable):
 
     def __init__(self, camera: Camera, unit_layer, screen: Surface, initial_x: int = 0, initial_y: int = 0) -> None:
         super().__init__(camera, unit_layer, screen, initial_x, initial_y)
+        self.mp = 0.0
         if self.max_hp is not None:
             self.hp = float(self.max_hp)
             self.hp_regen = self.base_hp_regen
         if self.attack_speed:
             self.attack_freeze = 0.0
+        self.abilities: List[BaseAbility] = []
 
     @final
     def update(self, action: str, **kwargs) -> None:
@@ -109,6 +112,16 @@ class BaseUnit(BaseDrawable):
                 self.hp = self.max_hp
         if self.attack_speed:
             self.attack_freeze -= 1
+
+    @property
+    def ability_names(self) -> List[str]:
+        return [a.name for a in self.abilities]
+
+    def ability_by_name(self, name: str) -> Optional[BaseAbility]:
+        for ability in self.abilities:
+            if ability.name == name:
+                return ability
+        return None
 
 
 class MovingToTargetUnit(BaseUnit):

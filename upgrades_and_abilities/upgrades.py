@@ -3,7 +3,7 @@ from typing import Tuple, List, Type, Optional
 from pygame import Surface
 
 from image_provider import ImageProvider
-from upgrades_and_abilities.base_abilities import BaseAbility
+from upgrades_and_abilities.base_abilities import PlayerAbility
 
 
 class BaseUpgrade:
@@ -22,7 +22,7 @@ class BaseUpgrade:
 
 
 class BaseAbilityUpgrade(BaseUpgrade):
-    ability: Type[BaseAbility]
+    ability: Type[PlayerAbility]
 
     def get_drawable(self) -> Tuple[str, Surface]:
         return self.text, self.ability.icon_image
@@ -32,7 +32,7 @@ class BaseAbilityUpgrade(BaseUpgrade):
         return cls._get_ability_instance(player) is not None
 
     @classmethod
-    def _get_ability_instance(cls, player) -> Optional[BaseAbility]:
+    def _get_ability_instance(cls, player) -> Optional[PlayerAbility]:
         return player.ability_by_name(cls.ability.name)
 
 
@@ -62,7 +62,7 @@ class DamageUpgrade(BaseUpgrade):
 
 
 class Upgrader:
-    def __init__(self, ability_type: Type[BaseAbility]) -> None:
+    def __init__(self, ability_type: Type[PlayerAbility]) -> None:
         self.ability_type = ability_type
 
     def __call__(self, player) -> None:
@@ -99,7 +99,7 @@ class UpgradeFactory:
         return res
 
     def _init_ability_upgrades(self):
-        for ability_class in BaseAbility.__subclasses__():
+        for ability_class in PlayerAbility.__subclasses__():
             ability_upgrade_class = type(f"{ability_class.name}Upgrade", (BaseUpgrade,), dict())
             setattr(ability_upgrade_class, 'text', ability_class.name)
             setattr(ability_upgrade_class, 'image', ability_class.icon_image)
