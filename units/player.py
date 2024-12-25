@@ -15,6 +15,10 @@ logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)
 
 
+class PlayerDeadException(Exception):
+    pass
+
+
 class PlayerImageStore(BaseImageStore):
 
     def __init__(self, path: str, reloaded: bool = True) -> None:
@@ -41,7 +45,7 @@ class PlayerImageStore(BaseImageStore):
 
 class Player(BaseUnit):
     image_path = "resources/units/player/"
-    max_hp = 100
+    max_hp = 10
     base_hp_regen = 0.5
     damage = 30
     attack_speed = 1
@@ -134,3 +138,6 @@ class Player(BaseUnit):
 
     def use_ability(self, ind: int) -> None:
         self.abilities[ind].use(self)
+
+    def _dead(self) -> None:
+        raise PlayerDeadException
