@@ -30,7 +30,7 @@ class MainWindow(QMainWindow):
     def position_ui_components(self):
         central_widget = ImageLabel('', 1, 1, 'resources/menu/menu_background.png', self)
         self.resizable_widgets.append(central_widget)
-        central_widget.setMinimumSize(10, 10)
+        central_widget = QWidget(central_widget)
         self.setCentralWidget(central_widget)
 
         main_layout = QVBoxLayout(central_widget)
