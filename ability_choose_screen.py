@@ -43,7 +43,7 @@ class AbilityChooseScreen:
 
 
 class UpgradeButton:
-    background_image = ImageProvider.get_image_by_path("resources/menu/ability_choose.png")
+    background_image = ImageProvider.get_image_by_path("resources/menu/v_menu_item.png")
 
     def __init__(self, screen: Surface, pos_x: int, pos_y: int, width: int, height: int, upgrade: BaseUpgrade,
                  callback: Callable, **kwargs) -> None:
