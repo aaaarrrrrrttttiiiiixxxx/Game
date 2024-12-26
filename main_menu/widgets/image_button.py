@@ -1,28 +1,23 @@
-from PyQt5.QtCore import Qt, QSize
-from PyQt5.QtGui import QPixmap, QIcon
-from PyQt5.QtWidgets import QPushButton, QLabel, QVBoxLayout
+from typing import Optional
+
+from PyQt5.QtWidgets import QPushButton
+
+from main_menu.widgets.image_label import ImageLabel
 
 
-class CustomButton(QPushButton):
-    def __init__(self, percent_h, percent_w, bottom_image_path, text, parent=None):
+class ImageButton(QPushButton):
+    def __init__(self, percent_h, percent_w, image_path, text, parent=None):
         super().__init__(parent)
-        pixmap = QPixmap(bottom_image_path)
-        icon = QIcon(pixmap)
-        self.setIcon(icon)
         self.percent_h = percent_h
         self.percent_w = percent_w
         self.setStyleSheet("QPushButton { border: none; background: transparent; }")
 
-        # текст кнопки
-        label = QLabel(text, self)
-        label.setStyleSheet("QLabel {font-size: 20px; font-weight: bold;}")
-        label.setAlignment(Qt.AlignCenter)
-        label_layout = QVBoxLayout(self)
-        label_layout.addStretch()
-        label_layout.addWidget(label)
-        label_layout.addStretch()
+        self.text_label = ImageLabel(text, percent_h, percent_w, image_path, self)
 
     def change_size(self, new_main_window_w: int, new_main_window_h: int):
         new_w, new_h = int(new_main_window_w * self.percent_w), int(new_main_window_h * self.percent_h)
-        self.setIconSize(QSize(new_w, new_h))
         self.setFixedSize(new_w, new_h)
+        self.text_label.change_size(new_main_window_w, new_main_window_h)
+
+    def setText(self, text: Optional[str]):
+        self.text_label.setText(text)
