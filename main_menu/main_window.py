@@ -5,6 +5,7 @@ from game import Game
 from main_menu.best_result_repository import BestResultRepository
 from main_menu.widgets.count_label import CountLabel
 from main_menu.widgets.image_button import ImageButton
+from main_menu.widgets.image_label import ImageLabel
 
 
 class MainWindow(QMainWindow):
@@ -12,22 +13,24 @@ class MainWindow(QMainWindow):
         super().__init__()
         self.setWindowTitle(" ")
         self.best_result_repository = BestResultRepository()
-        self.setGeometry(100, 100, 800, 600)
+        self.setGeometry(100, 100, 800, 450)
         self.resizable_widgets = []
         self.init_ui_components()
         self.position_ui_components()
         self.show()
 
     def init_ui_components(self):
-        self.button = ImageButton(0.25, 0.25, 'resources/menu/h_menu_item.png', "Run game")
-
+        self.button = ImageButton(0.15, 0.4, 'resources/menu/h_menu_item.png', "Run game")
         self.button.clicked.connect(self.handler)
-        self.best_result_label = CountLabel(self.best_result_repository.result, "Best result:", 0.25, 0.25,
+
+        self.best_result_label = CountLabel(self.best_result_repository.result, "Best result:", 0.15, 0.4,
                                             'resources/menu/h_menu_item.png', self)
-        self.curr_result_label = CountLabel(None, "Current result:", 0.25, 0.25, 'resources/menu/h_menu_item.png', self)
+        self.curr_result_label = CountLabel(None, "Current result:", 0.15, 0.4, 'resources/menu/h_menu_item.png', self)
 
     def position_ui_components(self):
-        central_widget = QWidget(self)
+        central_widget = ImageLabel('', 1, 1, 'resources/menu/menu_background.png', self)
+        self.resizable_widgets.append(central_widget)
+        central_widget.setMinimumSize(10, 10)
         self.setCentralWidget(central_widget)
 
         main_layout = QVBoxLayout(central_widget)
@@ -65,6 +68,5 @@ class MainWindow(QMainWindow):
         # Устанавливаем размеры кнопки в процентах от размера окна
         width = self.width()
         height = self.height()
-        self.button.change_size(width, height)
-        self.best_result_label.change_size(width, height)
-        self.curr_result_label.change_size(width, height)
+        for widget in self.resizable_widgets:
+            widget.change_size(width, height)
