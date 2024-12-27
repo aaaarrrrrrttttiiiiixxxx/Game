@@ -4,6 +4,7 @@ from typing import Union, Optional
 import pygame
 from pygame import Surface
 
+from EventAggregator import AttackEvent, DealDamageEvent
 from camera import Camera
 from config import FPS
 from units.base_units import MovingToTargetUnit
@@ -35,7 +36,8 @@ class BaseEnemy(MovingToTargetUnit):
 
     def _attack(self) -> None:
         if self.target:
-            self.target.got_attack(self.damage)
+            self.event_aggregator.event(AttackEvent(attacking_unit=self, target_unit=self.target, damage=self.damage))
+            self.event_aggregator.event(DealDamageEvent(attacking_unit=self, target_unit=self.target, damage=self.damage))
 
     def draw(self) -> None:
         super().draw()
@@ -93,7 +95,8 @@ class GoblinArcher(BaseEnemy):
     lvl1_exp = 65
 
     def _attack(self) -> None:
-        arrow = Arrow(self.camera, self.unit_layer, self.screen, self.rect.centerx, self.rect.centery, 1)
+        self.event_aggregator.event(AttackEvent(attacking_unit=self, target_unit=self.unit_layer.player, damage=self.damage))
+        arrow = Arrow(self.camera, self.unit_layer, self.screen, self, self.rect.centerx, self.rect.centery, 1)
         arrow.set_target(self.unit_layer.player)
         self.unit_layer.add_non_collide(arrow)
 

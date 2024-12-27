@@ -5,6 +5,7 @@ from typing import List, Union, Tuple
 import pygame
 from pygame import Surface
 
+from EventAggregator import AttackEvent, DealDamageEvent
 from camera import Camera
 from config import LVL_UP, WIDTH, HEIGHT, CAMERA_MOVE, RED, UPGRADE_FONT, BLUE, WHITE, FPS
 from units.base_units import BaseUnit
@@ -64,7 +65,8 @@ class Player(BaseUnit):
     def _attack(self) -> None:  # melee
         mob = self.unit_layer.get_nearest_mob(*self.rect.center)
         if mob is not None and mob.dist_from(*self.rect.center) < 130:
-            mob.got_attack(self.damage)
+            self.event_aggregator.event(AttackEvent(attacking_unit=self, target_unit=mob, damage=self.damage))
+            self.event_aggregator.event(DealDamageEvent(attacking_unit=self, target_unit=mob, damage=self.damage))
             self.image_store.attack((mob.rect.centerx - self.rect.centerx) < 0)
 
     def add_exp(self, exp: int) -> None:

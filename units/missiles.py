@@ -3,6 +3,7 @@ import math
 import pygame
 from pygame import Surface
 
+from EventAggregator import DealDamageEvent
 from camera import Camera
 from config import FPS
 from units.base_units import MovingToTargetUnit
@@ -11,16 +12,25 @@ from units.base_units import MovingToTargetUnit
 class BaseMissile(MovingToTargetUnit):
     rotate = False
 
-    def __init__(self, camera: Camera, unit_layer, screen: Surface, initial_x: int = 0, initial_y: int = 0, damage: int = 0) -> None:
+    def __init__(self,
+                 camera: Camera,
+                 unit_layer,
+                 screen: Surface,
+                 owner,
+                 initial_x: int = 0,
+                 initial_y: int = 0,
+                 damage: int = 0) -> None:
         super().__init__(camera, unit_layer, screen, initial_x, initial_y)
         self.damage = damage
+        self.owner = owner
 
     def _on_reach_target(self) -> None:
         if self.target is not None:
             self.rect.center = self.target.rect.center
             super().draw()
             self.kill()
-            self.target.got_attack(self.damage)
+            self.event_aggregator.event(
+                DealDamageEvent(attacking_unit=self.owner, target_unit=self.target, damage=self.damage))
 
     def draw(self) -> None:
         if self.rotate and self.target:

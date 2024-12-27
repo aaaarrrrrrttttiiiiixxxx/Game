@@ -1,6 +1,7 @@
 from pygame import Surface
 from pygame.sprite import Group, spritecollide
 
+from EventAggregator import EventAggregator, DealDamageEvent
 from camera import Camera
 from image_provider import ImageProvider
 from units.moving_to_point import MovingToPointUnit
@@ -12,11 +13,13 @@ class FireRoller(MovingToPointUnit):
     image_path = 'resources/units/roller'
     move_speed = 5
 
-    def __init__(self, camera: Camera, unit_layer, screen: Surface, initial_x: int = 0, initial_y: int = 0,
+    def __init__(self, camera: Camera, unit_layer, screen: Surface, owner, initial_x: int = 0, initial_y: int = 0,
                  damage: int = 0) -> None:
         super().__init__(camera, unit_layer, screen, initial_x, initial_y)
         self.damaged_units = Group()  # type: Group
         self.damage = damage
+        self.event_aggregator: EventAggregator = EventAggregator()
+        self.owner = owner
 
     def _on_reach_target(self) -> None:
         self.kill()
@@ -29,7 +32,8 @@ class FireRoller(MovingToPointUnit):
         for unit in collided:
             if unit not in self.damaged_units:
                 self.damaged_units.add(unit)
-                unit.got_attack(self.damage)
+                self.event_aggregator.event(
+                    DealDamageEvent(attacking_unit=self.owner, target_unit=unit, damage=self.damage))
 
         units.add(self.unit_layer.player)
 
@@ -46,7 +50,12 @@ class FireRollerAbility(PlayerAbility):
 
     def _use(self, player) -> None:
         find_target_pos = self.camera.get_mouse()
-        fireball = FireRoller(self.camera, player.unit_layer, player.screen, player.rect.centerx, player.rect.centery,
+        fireball = FireRoller(self.camera,
+                              player.unit_layer,
+                              player.screen,
+                              player,
+                              player.rect.centerx,
+                              player.rect.centery,
                               self.damage)
         fireball.set_target(*find_target_pos)
         player.unit_layer.add_non_collide(fireball)

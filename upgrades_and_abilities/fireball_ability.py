@@ -31,6 +31,7 @@ class FireballAbility(PlayerAbility):
             fireball = Fireball(self.camera,
                                 ability_owner.unit_layer,
                                 ability_owner.screen,
+                                ability_owner,
                                 ability_owner.rect.centerx,
                                 ability_owner.rect.centery,
                                 self.damage)

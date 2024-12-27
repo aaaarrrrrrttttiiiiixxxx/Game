@@ -6,6 +6,7 @@ from typing import final, Optional, Union, Type, List
 from pygame import Surface, Rect
 from pygame.sprite import Sprite
 
+from EventAggregator import EventAggregator, DealDamageEvent
 from camera import Camera
 from config import FONT, RED, FPS
 from units.image_stores import BaseImageStore
@@ -67,6 +68,8 @@ class BaseUnit(BaseDrawable):
         if self.attack_speed:
             self.attack_freeze = 0.0
         self.abilities: List[BaseAbility] = []
+        self.event_aggregator: EventAggregator = EventAggregator()
+        self.event_aggregator.subscribe(DealDamageEvent, self.got_attack)
 
     @final
     def update(self, action: str, **kwargs) -> None:
@@ -96,13 +99,18 @@ class BaseUnit(BaseDrawable):
             y -= 10
             self.screen.blit(img2, self.camera.map(x, y))
 
-    def got_attack(self, incoming_damage: int) -> None:
-        self.hp -= incoming_damage
-        if self.hp <= 0:
-            self._dead()
+    def got_attack(self, attack_event: DealDamageEvent) -> None:
+        if attack_event.target_unit == self:
+            self.hp -= attack_event.damage
+            if self.hp <= 0:
+                self._dead()
 
     def _dead(self) -> None:
         self.kill()
+
+    def kill(self):
+        self.event_aggregator.unsubscribe(DealDamageEvent, self.got_attack)
+        super().kill()
 
     def process_next_frame(self) -> None:
         super().process_next_frame()
