@@ -1,8 +1,12 @@
 import collections
 import contextlib
+import logging
 from typing import Callable, Dict, List, Type, Any
 
 from pydantic import BaseModel
+
+logger = logging.getLogger('event')
+logger.setLevel(logging.DEBUG)
 
 
 class DamageEvent(BaseModel):
@@ -32,16 +36,20 @@ class EventAggregator:
 
     def subscribe(self, event_type, subscriber: Callable) -> None:
         self._subscribers[event_type].append(subscriber)
+        logger.debug(f'SUBSCRIBE {str(subscriber)} to {event_type}')
 
     def event(self, event: BaseModel) -> None:
         for subscriber in self._subscribers[type(event)]:
             subscriber(event)
+        logger.debug(f'NEW EVENT: {event}')
 
     def unsubscribe(self, event_type, subscriber: Callable) -> None:
         with contextlib.suppress(ValueError):
             self._subscribers[event_type].remove(subscriber)
+        logger.debug(f'UNSUBSCRIBE {str(subscriber)} from {event_type}')
 
     def unsubscribe_all(self, subscriber) -> None:
         for subscribers in self._subscribers.values():
             with contextlib.suppress(ValueError):
                 subscribers.remove(subscriber)
+        logger.debug(f'UNSUBSCRIBE ALL {str(subscriber)} ')
