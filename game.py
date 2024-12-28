@@ -7,6 +7,7 @@ from camera import Camera
 from config import *
 from unit_generator import UnitGenerator
 from unit_layer import UnitLayer
+from units.enemies import BigGoblin
 from units.player import PlayerDeadException
 from upgrades_and_abilities.upgrades import *
 
@@ -27,6 +28,7 @@ class Game:
 
         self.goblin = self.unit_layer.create_goblin(100, 350)
         self.unit_layer.create_goblin_archer(230, 270)
+        # self.unit_layer.create_enemy(BigGoblin, 230, 270)
         self.unit_generator = UnitGenerator(self.unit_layer)
 
         self.running = True
@@ -44,7 +46,6 @@ class Game:
             if self.start_lvl and not self.pause:
                 pygame.event.post(pygame.event.Event(LVL_UP))
                 self.start_lvl -= 1
-
 
             try:
                 if not self.pause:
@@ -82,7 +83,7 @@ class Game:
                     self.unit_layer.player.attack()
                     self.unit_generator.step()
             except PlayerDeadException:
-                pygame.quit()
+                pygame.display.quit()
                 return self.unit_layer.player.level
 
             self.unit_layer.draw()

@@ -1,14 +1,14 @@
 import logging
-from typing import Optional
+from typing import Optional, Type
 
 from pygame import Surface
 from pygame.sprite import Group, spritecollide
 
 from camera import Camera
-from config import CAMERA_MOVE, WIDTH, HEIGHT
+from config import WIDTH
 from units.base_units import BaseUnit, BaseDrawable
 from units.enemies import Goblin, GoblinArcher, BaseEnemy
-from units.player import Player, PlayerImageStore
+from units.player import Player
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)
@@ -46,6 +46,11 @@ class UnitLayer:
         goblin = GoblinArcher(self.camera, self, self.screen, initial_x, initial_y)
         self.add_enemy(goblin)
         return goblin
+
+    def create_enemy(self, enemy_type: Type, initial_x: int = 0, initial_y: int = 0):
+        enemy = enemy_type(self.camera, self, self.screen, initial_x, initial_y)
+        self.add_enemy(enemy)
+        return enemy
 
     def add_enemy(self, enemy: BaseEnemy) -> None:
         enemy.set_target(self.player)
