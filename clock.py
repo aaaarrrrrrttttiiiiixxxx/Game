@@ -12,7 +12,7 @@ class Clock:
         return cls.__instance
 
     def tick(self, fps):
-        self.tics += 10
+        self.tics += 1
         self.pygame_clock.tick(fps)
 
     def reset(self):
