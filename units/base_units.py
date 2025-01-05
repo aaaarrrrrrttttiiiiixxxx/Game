@@ -94,7 +94,7 @@ class BaseUnit(BaseDrawable):
 
     def draw_text(self) -> None:
         if self.max_hp and self.hp:
-            img2 = FONT.render(f'{int(self.hp)} / {self.max_hp}', True, RED)
+            img2 = FONT.render(f'{round(self.hp)} / {self.max_hp}', True, RED)
             x, y = self.rect.topleft
             y -= 10
             self.screen.blit(img2, self.camera.map(x, y))

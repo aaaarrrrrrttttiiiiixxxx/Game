@@ -48,7 +48,7 @@ class Player(BaseUnit):
     image_path = "resources/units/player/"
     max_hp = 10
     base_hp_regen = 0.5
-    damage = 30
+    damage = 25
     attack_speed = 1
     image_store_type = PlayerImageStore
 

@@ -6,6 +6,7 @@ from pygame import Surface
 
 from EventAggregator import AttackEvent, DealDamageEvent
 from camera import Camera
+from clock import Clock
 from config import FPS
 from units.base_units import MovingToTargetUnit
 from units.missiles import Arrow
@@ -70,7 +71,7 @@ class BaseEnemy(MovingToTargetUnit):
 
     @staticmethod
     def _upgrade_by_time(value: int, ratio: float, round_factor: int = 1) -> int:
-        res = value + ratio * value * pygame.time.get_ticks() / 1000 / 60
+        res = value + ratio * value * Clock().get_time_minutes(FPS)
         return round_factor * round(int(res) / round_factor)
 
 

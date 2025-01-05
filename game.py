@@ -4,6 +4,7 @@ from random import shuffle
 from ability_choose_screen import AbilityChooseScreen
 from background import Background
 from camera import Camera
+from clock import Clock
 from config import *
 from unit_generator import UnitGenerator
 from unit_layer import UnitLayer
@@ -20,7 +21,8 @@ class Game:
         pygame.init()
         self.screen = pygame.display.set_mode((WIDTH, HEIGHT))
         pygame.display.set_caption("My Game")
-        self.clock = pygame.time.Clock()
+        self.clock = Clock()
+        self.clock.reset()
 
         camera = Camera()
         self.background = Background(camera, self.screen)

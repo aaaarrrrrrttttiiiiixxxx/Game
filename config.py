@@ -42,11 +42,11 @@ LOGGING_CONFIG = {
         },
     },
     'loggers': {
-        '': {
-            'handlers': ['default'],
-            'level': 'DEBUG',
-            'propagate': True,
-        },
+        # '': {
+        #     'handlers': ['default'],
+        #     'level': 'DEBUG',
+        #     'propagate': True,
+        # },
         'event': {
             'handlers': ['default'],
             'level': 'DEBUG',

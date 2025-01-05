@@ -53,6 +53,23 @@ class HPRagenUpgrade(BaseUpgrade):
         player.hp_regen += 1
 
 
+class MPUpgrade(BaseUpgrade):
+    text: str = '+ 10 MP'
+    image: Surface = ImageProvider.get_image_by_path("resources/icons/128/WaterDrop.png")
+
+    def upgrade(self, player) -> None:
+        player.max_mp += 10
+        player.mp += 10
+
+
+class MPRagenUpgrade(BaseUpgrade):
+    text: str = '+ 1 MP regen'
+    image: Surface = ImageProvider.get_image_by_path("resources/icons/128/PotionBlue.png")
+
+    def upgrade(self, player) -> None:
+        player.mp_regen += 1
+
+
 class DamageUpgrade(BaseUpgrade):
     text: str = '+ 5 damage'
     image: Surface = ImageProvider.get_image_by_path("resources/icons/128/SwordT2.png")
@@ -99,9 +116,13 @@ class UpgradeFactory:
         return res
 
     def _init_ability_upgrades(self):
+        inited = {e.__name__.split('.')[-1] for e in BaseUpgrade.__subclasses__()}
+
         for ability_class in PlayerAbility.__subclasses__():
-            ability_upgrade_class = type(f"{ability_class.name}Upgrade", (BaseUpgrade,), dict())
-            setattr(ability_upgrade_class, 'text', ability_class.name)
-            setattr(ability_upgrade_class, 'image', ability_class.icon_image)
-            setattr(ability_upgrade_class, 'upgrade', Upgrader(ability_class))
-            self._ability_upgrades.append(ability_upgrade_class)
+            name = f"{ability_class.name}Upgrade"
+            if name not in inited:
+                ability_upgrade_class = type(name, (BaseUpgrade,), dict())
+                setattr(ability_upgrade_class, 'text', ability_class.name)
+                setattr(ability_upgrade_class, 'image', ability_class.icon_image)
+                setattr(ability_upgrade_class, 'upgrade', Upgrader(ability_class))
+                self._ability_upgrades.append(ability_upgrade_class)
